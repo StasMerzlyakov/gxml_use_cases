@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:common="https://github.com/StasMerzlyakov/gxml/common-data"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="https://github.com/StasMerzlyakov/gxml/common-data"
+            elementFormDefault="qualified"
+            attributeFormDefault="qualified">
+    <xsd:complexType name="ValidityPeriodType">
+        <xsd:annotation>
+            <xsd:documentation>Период</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="From" type="common:DateTimeType"/>
+            <xsd:element name="To" type="common:DateTimeType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="DateTimeType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="ru">Дата и время с разумными ограничениями.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:dateTime">
+            <xsd:minInclusive value="1900-01-01T00:00:00"/>
+            <xsd:maxInclusive value="2099-12-31T23:59:59"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="CardTypeType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="ru">Тип карты.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Visa"/>
+            <xsd:enumeration value="MIR"/>
+            <xsd:enumeration value="MasterCard"/>
+            <xsd:enumeration value="UnionPay"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="MiddleStringType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="ru">Базовый класс дл строк. Содержит общий набор ограничений,
+                на длину, и на допустимые символы.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="255"/>
+            <xsd:pattern value="[a-zA-Zа-яА-ЯёЁ\d\s\(\)\?\.&quot;,#№:;\-\+/'\*]{1,255}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ComplexDateType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="ru">Дата рождения</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="year">
+                <xsd:simpleType>
+                    <xsd:restriction base="xsd:gYear">
+                        <xsd:minInclusive value="1900"/>
+                        <xsd:maxInclusive value="2200"/>
+                    </xsd:restriction>
+                </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="month" minOccurs="0" type="xsd:gMonth"/>
+            <xsd:element name="day" minOccurs="0" type="xsd:gDay"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="CardNumberType">
+        <xsd:annotation>
+            <xsd:documentation>Номер карты</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{4}\s[0-9]{4}\s[0-9]{4}\s[0-9]{4}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:element name="BirthDate" type="common:ComplexDateType"/>
+
+    <xsd:element name="CardData" type="common:CardDataType"/>
+
+    <xsd:complexType name="CardDataType">
+        <xsd:sequence>
+            <xsd:element name="CardType" type="common:CardTypeType"/>
+            <xsd:element name="CardNumber" type="common:CardNumberType"/>
+            <xsd:element name="ExpirationDate" type="common:ExpirationDateType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="CVCType">
+        <xsd:annotation>
+            <xsd:documentation>код cvc</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{3}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ExpirationDateType">
+        <xsd:annotation>
+            <xsd:documentation>срок действия карты</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]{2}/[0-9]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

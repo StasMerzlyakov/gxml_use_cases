@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<card:CardRequest xmlns:card="https://github.com/StasMerzlyakov/gxml/card-service"
+                  xmlns:cd="https://github.com/StasMerzlyakov/gxml/common-data">
+  <card:FirstName>Иванов</card:FirstName>
+  <card:LastName>Иван</card:LastName>
+  <card:Patronymic>Иванович</card:Patronymic>
+  <cd:BirthDate>
+    <cd:year>1900</cd:year>
+    <cd:month>--09</cd:month>
+    <cd:day>---19</cd:day>
+  </cd:BirthDate>
+  <card:CardType>MasterCard</card:CardType>
+</card:CardRequest>
