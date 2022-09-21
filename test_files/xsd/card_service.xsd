@@ -28,4 +28,6 @@
             <xsd:element name="CVC" type="cd:CVCType"/>
         </xsd:sequence>
     </xsd:complexType>
+
+    <xsd:element name="CardData" type="cd:CardDataType"/>
 </xsd:schema>
