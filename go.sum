@@ -10,6 +10,8 @@ github.com/StasMerzlyakov/gxml v0.0.0-20220921115111-e540cda5c397 h1:UprXksUuFw7
 github.com/StasMerzlyakov/gxml v0.0.0-20220921115111-e540cda5c397/go.mod h1:iQCqc3rr1ZJ0GbImng214U8kq9tJRIroL+noHHwQp/I=
 github.com/StasMerzlyakov/gxml v0.0.0-20220921144550-af512e18b667 h1:eEX6QaTgw6rceY3e3CrXf5g778Yb48dW8LIab+IeYZM=
 github.com/StasMerzlyakov/gxml v0.0.0-20220921144550-af512e18b667/go.mod h1:iQCqc3rr1ZJ0GbImng214U8kq9tJRIroL+noHHwQp/I=
+github.com/StasMerzlyakov/gxml v0.0.0-20220921173709-de5017eef9c6 h1:pTq0/OdFmO6urj2fgCb1UIcxtxdPfqUnLvNXPBVn/28=
+github.com/StasMerzlyakov/gxml v0.0.0-20220921173709-de5017eef9c6/go.mod h1:iQCqc3rr1ZJ0GbImng214U8kq9tJRIroL+noHHwQp/I=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

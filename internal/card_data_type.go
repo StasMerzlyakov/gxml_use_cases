@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type cardDataTypeValidator struct {
@@ -12,7 +13,7 @@ type cardDataTypeValidator struct {
 }
 
 func (cv *cardDataTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
-	result := fmt.Sprintf("Unexpected element %s; expected", elementType.ToString())
+	result := fmt.Sprintf("unexpected element %s: expected", elementType.ToString())
 	expectedStates := cardDataTypeStateAcceptableMap[cv.state]
 	for idx, est := range expectedStates {
 		expectedElement := cardDataTypeStateToElement[est]
@@ -22,12 +23,11 @@ func (cv *cardDataTypeValidator) unexpectedElementError(elementType xsd.ElementD
 			result += ", " + expectedElement.ToString()
 		}
 	}
-	result += "."
 	return errors.New(result)
 }
 
 func (cv *cardDataTypeValidator) unexpectedEndOfElement() error {
-	result := "Unexpected end of element expected "
+	result := "unexpected end of element: expected "
 	expectedStates := cardDataTypeStateAcceptableMap[cv.state]
 	for idx, est := range expectedStates {
 		expectedElement := cardDataTypeStateToElement[est]
@@ -37,11 +37,20 @@ func (cv *cardDataTypeValidator) unexpectedEndOfElement() error {
 			result += ", " + expectedElement.ToString()
 		}
 	}
-	result += "."
 	return errors.New(result)
 }
 
+func (cv *cardDataTypeValidator) CheckValue(runes []rune) error {
+	if !xsd2.IsEmpty(runes) {
+		return errors.New("value unexpected")
+	}
+	return nil
+}
+
 func (cv *cardDataTypeValidator) AcceptElement(elementType xsd.ElementData) error {
+	if elementType.Type == xsd.CharData {
+		return nil
+	}
 	if state, ok := cardDataTypeElementToState[elementType]; !ok {
 		return cv.unexpectedElementError(elementType)
 	} else {

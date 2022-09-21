@@ -17,24 +17,19 @@ func (cv *cardTypeTypeValidator) unexpectedElementError(elementType xsd.ElementD
 }
 
 func (cv *cardTypeTypeValidator) unexpectedEndOfElement() error {
-	result := "Unexpected end of element expected. Expected value."
+	result := "unexpected end of element expected: expected value"
 	return errors.New(result)
+}
+
+func (cv *cardTypeTypeValidator) CheckValue(runes []rune) error {
+	return nil
 }
 
 func (cv *cardTypeTypeValidator) AcceptElement(elementType xsd.ElementData) error {
 	if elementType.Type != xsd.CharData {
 		return cv.unexpectedElementError(elementType)
 	}
-	if state, ok := cardTypeTypeElementToState[elementType]; !ok {
-		return cv.unexpectedElementError(elementType)
-	} else {
-		acceptableStates := cardTypeTypeStateAcceptableMap[cv.state]
-		if acceptableStates == nil || !util.Contains(acceptableStates, state) {
-			return cv.unexpectedElementError(elementType)
-		}
-		cv.state = state
-		return nil
-	}
+	return nil
 }
 
 func (cv *cardTypeTypeValidator) CompleteElement() error {
@@ -58,23 +53,11 @@ func (cardTypeTypeCreator) Create() xsd.IElementValidator {
 
 type cardTypeTypeState int
 
-const cardTypeTypeCommon = "https://github.com/StasMerzlyakov/gxml/common-data"
-
-var cardTypeTypeElementData1 = xsd.ElementData{
-	Type: xsd.CharData,
-}
-
-var cardTypeTypeElementToState = map[xsd.ElementData]cardTypeTypeState{
-	cardTypeTypeElementData1: cardTypeTypeValueState1,
-}
-
 var cardTypeTypeStateAcceptableMap = map[cardTypeTypeState][]cardTypeTypeState{
-	cardTypeTypeStateInit:   {cardTypeTypeValueState1},
-	cardTypeTypeValueState1: {cardTypeTypeStateEnd},
+	cardTypeTypeStateInit: {cardTypeTypeStateEnd},
 }
 
 const (
-	cardTypeTypeStateInit   cardTypeTypeState = 0
-	cardTypeTypeValueState1 cardTypeTypeState = 1
-	cardTypeTypeStateEnd    cardTypeTypeState = 2
+	cardTypeTypeStateInit cardTypeTypeState = 0
+	cardTypeTypeStateEnd  cardTypeTypeState = 1
 )

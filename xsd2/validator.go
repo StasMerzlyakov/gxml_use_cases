@@ -72,10 +72,6 @@ func (xv *Validator) Validate() ([]string, error) {
 				elementValidatorStack.Pop()
 				elementStack.Pop()
 			case parser.CharData:
-				isEmpty := isEmpty(token.Runes)
-				if xv.SkipEmptyCharData && isEmpty {
-					continue
-				}
 				currentValidator := elementValidatorStack.Peek()
 				if currentValidator != nil {
 					elementData := xsd.ElementData{
@@ -84,17 +80,9 @@ func (xv *Validator) Validate() ([]string, error) {
 					if err := currentValidator.AcceptElement(elementData); err != nil {
 						return validationErrorList, err
 					}
-				}
-			case parser.Space:
-				if !xv.SkipEmptyCharData {
-					currentValidator := elementValidatorStack.Peek()
-					if currentValidator != nil {
-						elementData := xsd.ElementData{
-							Type: xsd.CharData,
-						}
-						if err := currentValidator.AcceptElement(elementData); err != nil {
-							return validationErrorList, err
-						}
+
+					if err := currentValidator.CheckValue(token.Runes); err != nil {
+						return validationErrorList, err
 					}
 				}
 
@@ -144,7 +132,7 @@ func isSpace(r rune) bool {
 	return r == 0x20 || r == 0x9 || r == 0xd || r == 0xa
 }
 
-func isEmpty(runes []rune) bool {
+func IsEmpty(runes []rune) bool {
 	isEmpty := true
 	for _, r := range runes {
 		if !isSpace(r) {
