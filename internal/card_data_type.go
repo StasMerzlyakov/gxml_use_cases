@@ -85,23 +85,21 @@ func (cardDataTypeCreator) Create() xsd.IElementValidator {
 
 type cardDataTypeState int
 
-const cardDataTypeCommon = "https://github.com/StasMerzlyakov/gxml/common-data"
-
 var cardDataTypeElementData1 = xsd.ElementData{
-	Namespace: cardDataTypeCommon,
+	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
 	Name:      "CardType",
 	Type:      xsd.ElementNode,
 }
 
 var cardDataTypeElementData2 = xsd.ElementData{
-	Namespace: cardDataTypeCommon,
-	Name:      "CardNumberType",
+	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
+	Name:      "CardNumber",
 	Type:      xsd.ElementNode,
 }
 
 var cardDataTypeElementData3 = xsd.ElementData{
-	Namespace: cardDataTypeCommon,
-	Name:      "ExpirationDateType",
+	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
+	Name:      "ExpirationDate",
 	Type:      xsd.ElementNode,
 }
 

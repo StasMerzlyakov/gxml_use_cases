@@ -29,11 +29,9 @@ type Validator struct {
 }
 
 func (xv *Validator) Validate() ([]string, error) {
-
 	var validationErrorList []string
 	var elementStack util.Stack[parser.Element]
 	var elementValidatorStack ElementValidatorStack
-
 	for {
 		if token, err := xv.XmlParser.Next(); err != nil {
 			return validationErrorList, err
@@ -44,26 +42,35 @@ func (xv *Validator) Validate() ([]string, error) {
 			switch token.XmlEventType {
 			case parser.STag:
 				currentElement := *xv.XmlParser.CurrentElement()
-				elementStack.Push(currentElement)
-				if elementNamespace, err := xv.XmlParser.GetNamespaceByPrefix(currentElement.Name.Prefix); err != nil {
-					return validationErrorList, err
-				} else {
-					elementData := xsd.ElementData{
-						Namespace: elementNamespace,
-						Name:      currentElement.Name.Name,
-						Type:      xsd.ElementNode,
-					}
-
-					// check by current validator
-					if !elementValidatorStack.IsEmpty() {
-						currentValidator := elementValidatorStack.Peek()
-						if err := currentValidator.AcceptElement(elementData); err != nil {
-							return validationErrorList, err
-						}
-					}
-					nextValidator := xv.ElementValidatorCreatorMap[elementData].Create()
-					elementValidatorStack.Push(nextValidator)
+				var currentValidator xsd.IElementValidator
+				if !elementValidatorStack.IsEmpty() {
+					currentValidator = elementValidatorStack.Peek()
 				}
+				elementPrefix := currentElement.Name.Prefix
+				if currentValidator != nil && elementPrefix == "" {
+					// TODO проверка currentValidator.GetElementFormDefault
+					// elementPrefix = ...
+				}
+
+				elementNamespace, err := xv.XmlParser.GetNamespaceByPrefix(elementPrefix)
+				if err != nil {
+					return validationErrorList, err
+				}
+
+				elementData := xsd.ElementData{
+					Namespace: elementNamespace,
+					Name:      currentElement.Name.Name,
+					Type:      xsd.ElementNode,
+				}
+				if currentValidator != nil {
+					if err := currentValidator.AcceptElement(elementData); err != nil {
+						return validationErrorList, err
+					}
+				}
+				nextValidator := xv.ElementValidatorCreatorMap[elementData].Create()
+				elementValidatorStack.Push(nextValidator)
+				elementStack.Push(currentElement)
+
 			case parser.ETagEnd, parser.EmptyElemEnd:
 				currentValidator := elementValidatorStack.Peek()
 				if err := currentValidator.CompleteElement(); err != nil {
@@ -73,28 +80,25 @@ func (xv *Validator) Validate() ([]string, error) {
 				elementStack.Pop()
 			case parser.CharData:
 				currentValidator := elementValidatorStack.Peek()
-				if currentValidator != nil {
-					elementData := xsd.ElementData{
-						Type: xsd.CharData,
-					}
-					if err := currentValidator.AcceptElement(elementData); err != nil {
-						return validationErrorList, err
-					}
-
-					if err := currentValidator.CheckValue(token.Runes); err != nil {
-						return validationErrorList, err
-					}
+				if err := currentValidator.CheckValue(token.Runes); err != nil {
+					return validationErrorList, err
 				}
-
 			case parser.Attr:
-				currentValidator := elementValidatorStack.Peek()
-				// TODO перейти на CurrentAttribute
 				currentAttribute := parseAttribute(string(token.Runes))
 				if currentAttribute.Prefix != xmlns {
-					if attributeNamespace, err := xv.XmlParser.GetNamespaceByPrefix(currentAttribute.Prefix); err != nil {
+					if elementValidatorStack.IsEmpty() {
+						validationErrorList = append(validationErrorList, "attribute must be in element")
+						return validationErrorList, err
+					}
+					currentValidator := elementValidatorStack.Peek()
+					attributePrefix := currentAttribute.Prefix
+					if attributePrefix == "" {
+						// TODO проверка currentValidator.GetElementFormDefault
+						// attributePrefix = ...
+					}
+					if attributeNamespace, err := xv.XmlParser.GetNamespaceByPrefix(attributePrefix); err != nil {
 						return validationErrorList, err
 					} else {
-
 						elementData := xsd.ElementData{
 							Namespace: attributeNamespace,
 							Name:      currentAttribute.Name,
@@ -108,7 +112,6 @@ func (xv *Validator) Validate() ([]string, error) {
 			}
 		}
 	}
-	return validationErrorList, nil
 }
 
 func NewXsdValidator(r *bufio.Reader) (IXsdValidator, error) {

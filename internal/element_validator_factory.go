@@ -11,6 +11,12 @@ const cardDataElementName = "CardData"
 const cardTypeElementNS = "https://github.com/StasMerzlyakov/gxml/common-data"
 const cardTypeElementName = "CardType"
 
+const cardNumberElementNS = "https://github.com/StasMerzlyakov/gxml/common-data"
+const cardNumberElementName = "CardNumber"
+
+const expirationDateElementNS = "https://github.com/StasMerzlyakov/gxml/common-data"
+const expirationDateElementName = "ExpirationDate"
+
 var ElementValidatorMap = map[xsd.ElementData]xsd2.ICreator{
 	xsd.ElementData{
 		Namespace: cardDataElementNS,
@@ -22,4 +28,14 @@ var ElementValidatorMap = map[xsd.ElementData]xsd2.ICreator{
 		Name:      cardTypeElementName,
 		Type:      xsd.ElementNode,
 	}: cardTypeTypeCreator{},
+	xsd.ElementData{
+		Namespace: cardNumberElementNS,
+		Name:      cardNumberElementName,
+		Type:      xsd.ElementNode,
+	}: cardNumberTypeCreator{},
+	xsd.ElementData{
+		Namespace: expirationDateElementNS,
+		Name:      expirationDateElementName,
+		Type:      xsd.ElementNode,
+	}: cardNumberTypeCreator{},
 }
