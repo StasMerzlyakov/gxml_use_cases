@@ -5,6 +5,12 @@ import (
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
+var NamespacesMap = map[string]string {
+	"https://github.com/StasMerzlyakov/gxml/card-service": "crd",
+	"https://github.com/StasMerzlyakov/gxml/common-data": "common"
+}
+
+
 const cardDataElementNS = "https://github.com/StasMerzlyakov/gxml/card-service"
 const cardDataElementName = "CardData"
 

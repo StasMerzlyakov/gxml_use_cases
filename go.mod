@@ -3,7 +3,7 @@ module github.com/StasMerzlyakov/gxml_use_cases
 go 1.19
 
 require (
-	github.com/StasMerzlyakov/gxml v0.0.0-20220921174659-284868ed1ca8
+	github.com/StasMerzlyakov/gxml v0.0.0-20220922065643-99751d2e870f
 	github.com/stretchr/testify v1.8.0
 )
 
