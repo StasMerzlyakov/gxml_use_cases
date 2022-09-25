@@ -1,18 +1,17 @@
-package internal
+package common
 
 import (
 	"errors"
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
-type cardDataTypeValidator struct {
+type CardDataTypeValidator struct {
 	state cardDataTypeState
 }
 
-func (cv *cardDataTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
+func (cv *CardDataTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
 	result := fmt.Sprintf("unexpected element %s: expected", elementType.ToString())
 	expectedStates := cardDataTypeStateAcceptableMap[cv.state]
 	for idx, est := range expectedStates {
@@ -26,7 +25,7 @@ func (cv *cardDataTypeValidator) unexpectedElementError(elementType xsd.ElementD
 	return errors.New(result)
 }
 
-func (cv *cardDataTypeValidator) unexpectedEndOfElement() error {
+func (cv *CardDataTypeValidator) unexpectedEndOfElement() error {
 	result := "unexpected end of element: expected "
 	expectedStates := cardDataTypeStateAcceptableMap[cv.state]
 	for idx, est := range expectedStates {
@@ -40,14 +39,14 @@ func (cv *cardDataTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *cardDataTypeValidator) CheckValue(runes []rune) error {
-	if !xsd2.IsEmpty(runes) {
+func (cv *CardDataTypeValidator) CheckValue(runes []rune) error {
+	if !util.IsEmpty(runes) {
 		return errors.New("value unexpected")
 	}
 	return nil
 }
 
-func (cv *cardDataTypeValidator) AcceptElement(elementType xsd.ElementData) error {
+func (cv *CardDataTypeValidator) AcceptElement(elementType xsd.ElementData) error {
 	if elementType.Type == xsd.CharData {
 		return nil
 	}
@@ -63,7 +62,7 @@ func (cv *cardDataTypeValidator) AcceptElement(elementType xsd.ElementData) erro
 	}
 }
 
-func (cv *cardDataTypeValidator) CompleteElement() error {
+func (cv *CardDataTypeValidator) CompleteElement() error {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := cardDataTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardDataTypeStateEnd) {
@@ -71,16 +70,6 @@ func (cv *cardDataTypeValidator) CompleteElement() error {
 	} else {
 		return cv.unexpectedEndOfElement()
 	}
-}
-
-type cardDataTypeCreator struct {
-}
-
-func (cardDataTypeCreator) Create() xsd.IElementValidator {
-	validator := cardDataTypeValidator{
-		state: cardDataTypeStateInit,
-	}
-	return &validator
 }
 
 type cardDataTypeState int
@@ -101,6 +90,22 @@ var cardDataTypeElementData3 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
 	Name:      "ExpirationDate",
 	Type:      xsd.ElementNode,
+}
+
+func (cv *CardDataTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+	switch elementData {
+	case cardDataTypeElementData1:
+		validator1 := ComplexDateTypeYearTypeValidator{}
+		return &validator1
+	case cardDataTypeElementData2:
+		validator2 := ComplexDateTypeMonthTypeValidator{}
+		return &validator2
+	case cardDataTypeElementData3:
+		validator3 := ComplexDateTypeDayTypeValidator{}
+		return &validator3
+	default:
+		return nil
+	}
 }
 
 var cardDataTypeStateToElement = map[cardDataTypeState]xsd.ElementData{

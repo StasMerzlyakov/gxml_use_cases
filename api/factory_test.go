@@ -8,7 +8,7 @@ import (
 )
 
 func TestValidator1(t *testing.T) {
-	file, err := os.Open("../test_files/xml/card_type_1.xml")
+	file, err := os.Open("../test_files/xml/card_response_1.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -19,12 +19,12 @@ func TestValidator1(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = xsdValidator.Validate()
+	err = xsdValidator.Validate()
 	assert.Nil(t, err)
 }
 
 func TestValidator2(t *testing.T) {
-	file, err := os.Open("../test_files/xml/card_type_2.xml")
+	file, err := os.Open("../test_files/xml/card_response_2.xml")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,6 +35,6 @@ func TestValidator2(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = xsdValidator.Validate()
+	err = xsdValidator.Validate()
 	assert.NotNil(t, err)
 }

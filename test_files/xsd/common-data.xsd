@@ -78,8 +78,6 @@
 
     <xsd:element name="BirthDate" type="common:ComplexDateType"/>
 
-    <xsd:element name="CardData" type="common:CardDataType"/>
-
     <xsd:complexType name="CardDataType">
         <xsd:sequence>
             <xsd:element name="CardType" type="common:CardTypeType"/>

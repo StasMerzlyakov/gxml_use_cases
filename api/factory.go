@@ -8,18 +8,17 @@ import (
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
-func NewXsdValidator(r *bufio.Reader) (xsd2.IXsdValidator, error) {
+func NewXsdValidator(r *bufio.Reader) (xsd2.IXsdValidator2, error) {
 	return NewXsdValidatorSize(r, buffer.RuneBufferSize)
 }
 
-func NewXsdValidatorSize(r *bufio.Reader, size int) (xsd2.IXsdValidator, error) {
+func NewXsdValidatorSize(r *bufio.Reader, size int) (xsd2.IXsdValidator2, error) {
 	if xmlParser, err := api.NewXmlParserSize(r, size); err != nil {
 		return nil, err
 	} else {
-		validator := xsd2.Validator{
-			XmlParser:                  xmlParser,
-			ElementValidatorCreatorMap: internal.ElementValidatorMap,
-			SkipEmptyCharData:          true,
+		validator := xsd2.Validator2{
+			XmlParser: xmlParser,
+			Resolver:  internal.Resolver{},
 		}
 		return &validator, err
 	}

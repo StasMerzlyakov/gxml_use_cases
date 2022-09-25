@@ -1,28 +1,19 @@
 package common
 
 import (
-	"fmt"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
-type sample struct {
+var birthDateElement = xsd.NameAndNamespace{
+	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
+	Name:      "BirthDate",
 }
 
-func (s sample) AcceptElement(elementData xsd.ElementData) error {
+func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd.IElementValidator {
+	switch nameAndNamespace {
+	case birthDateElement:
+		birthDateElementValidator := ComplexDateTypeValidator{}
+		return &birthDateElementValidator
+	}
 	return nil
-}
-
-func (s sample) CompleteElement() error {
-	fmt.Println("common !!")
-	return nil
-}
-
-func (s sample) CheckValue(runes []rune) []string {
-	return nil
-}
-
-func ResolveValidator(name xsd2.NameAndNamespace) (xsd.IElementValidator, error) {
-	validator := sample{}
-	return &validator, nil
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<card:CardResponse xmlns:card="https://github.com/StasMerzlyakov/gxml/card-service"
+                   xmlns:com="https://github.com/StasMerzlyakov/gxml/common-data">
+  <card:CardData>
+    <com:CardType>MasterCard</com:CardType>
+  </card:CardData>
+  <card:CVC>123</card:CVC>
+</card:CardResponse>

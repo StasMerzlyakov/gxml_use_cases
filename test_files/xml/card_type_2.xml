@@ -1,4 +1,0 @@
-<card:CardData xmlns:card="https://github.com/StasMerzlyakov/gxml/card-service"
-               xmlns:com="https://github.com/StasMerzlyakov/gxml/common-data">
-  <com:CardType>MasterCard</com:CardType>
-</card:CardData>

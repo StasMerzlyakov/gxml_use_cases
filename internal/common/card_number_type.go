@@ -1,4 +1,4 @@
-package internal
+package common
 
 import (
 	"errors"
@@ -7,32 +7,32 @@ import (
 	"github.com/StasMerzlyakov/gxml/xsd"
 )
 
-type cardNumberTypeValidator struct {
+type CardNumberTypeValidator struct {
 	state cardNumberTypeState
 }
 
-func (cv *cardNumberTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
+func (cv *CardNumberTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
 	result := fmt.Sprintf("Unexpected element %s; expected element value.", elementType.ToString())
 	return errors.New(result)
 }
 
-func (cv *cardNumberTypeValidator) unexpectedEndOfElement() error {
+func (cv *CardNumberTypeValidator) unexpectedEndOfElement() error {
 	result := "unexpected end of element expected: expected value"
 	return errors.New(result)
 }
 
-func (cv *cardNumberTypeValidator) CheckValue(runes []rune) error {
+func (cv *CardNumberTypeValidator) CheckValue(runes []rune) error {
 	return nil
 }
 
-func (cv *cardNumberTypeValidator) AcceptElement(elementType xsd.ElementData) error {
+func (cv *CardNumberTypeValidator) AcceptElement(elementType xsd.ElementData) error {
 	if elementType.Type != xsd.CharData {
 		return cv.unexpectedElementError(elementType)
 	}
 	return nil
 }
 
-func (cv *cardNumberTypeValidator) CompleteElement() error {
+func (cv *CardNumberTypeValidator) CompleteElement() error {
 	acceptableStates := cardNumberTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardNumberTypeStateEnd) {
 		return nil
@@ -41,14 +41,8 @@ func (cv *cardNumberTypeValidator) CompleteElement() error {
 	}
 }
 
-type cardNumberTypeCreator struct {
-}
-
-func (cardNumberTypeCreator) Create() xsd.IElementValidator {
-	validator := cardNumberTypeValidator{
-		state: cardNumberTypeStateInit,
-	}
-	return &validator
+func (cv *CardNumberTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+	return nil
 }
 
 type cardNumberTypeState int
