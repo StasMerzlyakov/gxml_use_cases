@@ -5,6 +5,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/parser"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"reflect"
 	"strings"
 )
 
@@ -12,23 +13,51 @@ type IXsdValidator2 interface {
 	Validate() error
 }
 
+type IValidatorResolver interface {
+	ResolveValidator(nameAndNamespace xsd.NameAndNamespace) IElementValidator
+}
+
 type Validator2 struct {
 	XmlParser parser.IXmlParser
-	Resolver  xsd.IValidatorResolver
+	Resolver  IValidatorResolver
 }
 
-type elementValidatorStack struct {
-	data []xsd.IElementValidator
+type anyStack struct {
+	data []any
 }
 
-func (s *elementValidatorStack) Pop() (v xsd.IElementValidator) {
+func (s *anyStack) Pop() (v any) {
 	l := len(s.data)
 	rv := s.data[l-1]
 	s.data = s.data[:l-1]
 	return rv
 }
 
-func (s *elementValidatorStack) Push(v xsd.IElementValidator) {
+func (s *anyStack) Push(v any) {
+	s.data = append(s.data, v)
+}
+
+func (s *anyStack) IsEmpty() bool {
+	return len(s.data) == 0
+}
+
+func (s *anyStack) Peek() (v any) {
+	l := len(s.data)
+	return s.data[l-1]
+}
+
+type elementValidatorStack struct {
+	data []IElementValidator
+}
+
+func (s *elementValidatorStack) Pop() (v IElementValidator) {
+	l := len(s.data)
+	rv := s.data[l-1]
+	s.data = s.data[:l-1]
+	return rv
+}
+
+func (s *elementValidatorStack) Push(v IElementValidator) {
 	s.data = append(s.data, v)
 }
 
@@ -36,13 +65,14 @@ func (s *elementValidatorStack) IsEmpty() bool {
 	return len(s.data) == 0
 }
 
-func (s *elementValidatorStack) Peek() (v xsd.IElementValidator) {
+func (s *elementValidatorStack) Peek() (v IElementValidator) {
 	l := len(s.data)
 	return s.data[l-1]
 }
 
 func (xv *Validator2) Validate() error {
 	var elementStack util.Stack[parser.Element]
+	var objectStack anyStack
 	var elementValidatorStack elementValidatorStack
 	inXmlDecl := false
 	for {
@@ -61,7 +91,7 @@ func (xv *Validator2) Validate() error {
 				continue
 			case parser.STag:
 				currentElement := *xv.XmlParser.CurrentElement()
-				var currentValidator xsd.IElementValidator
+				var currentValidator IElementValidator
 				if !elementValidatorStack.IsEmpty() {
 					currentValidator = elementValidatorStack.Peek()
 					elementPrefix := currentElement.Name.Prefix
@@ -84,11 +114,16 @@ func (xv *Validator2) Validate() error {
 						return err
 					}
 
-					nextValidator := currentValidator.ResolveValidator(elementData)
+					obj, nextValidator := currentValidator.ResolveValidator(elementData)
 					if nextValidator == nil {
 						return fmt.Errorf("validator for %s not found", elementData.ToString())
 					}
 					elementValidatorStack.Push(nextValidator)
+					if obj != nil {
+						methodName := "Set" + elementData.Name
+						reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
+						objectStack.Push(obj)
+					}
 				} else {
 					elementName := xv.XmlParser.CurrentElement().Name
 					namespace, err := xv.XmlParser.GetNamespaceByPrefix(elementName.Prefix)
@@ -109,15 +144,24 @@ func (xv *Validator2) Validate() error {
 
 			case parser.ETagEnd, parser.EmptyElemEnd:
 				currentValidator := elementValidatorStack.Peek()
-				if err := currentValidator.CompleteElement(); err != nil {
+				if popObj, err := currentValidator.CompleteElement(); err != nil {
 					return err
+				} else {
+					if popObj {
+						objectStack.Pop()
+					}
 				}
 				elementValidatorStack.Pop()
 				elementStack.Pop()
 			case parser.CharData:
 				currentValidator := elementValidatorStack.Peek()
-				if err := currentValidator.CheckValue(token.Runes); err != nil {
+				if value, err := currentValidator.CheckValue(token.Runes); err != nil {
 					return err
+				} else {
+					if value != nil {
+						methodName := "Set" + elementStack.Peek().Name.Name
+						reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(value)})
+					}
 				}
 			case parser.Attr:
 				if inXmlDecl {
@@ -185,3 +229,14 @@ const etagStartLen = len(etagStart)
 const stagStart = "<"
 const stagStartLen = len(stagStart)
 const xmlns = "xmlns"
+
+type IElementValidator interface {
+	AcceptElement(elementData xsd.ElementData) error
+	CompleteElement() (bool, error)
+	CheckValue(runes []rune) (any, error)
+	ResolveValidator(elementData xsd.ElementData) IElementValidator
+	GetInstance() any
+
+	// TODO GetAttributeFormDefault and GetElementFormDefault support;
+	// current implementation work as AttributeFormDefault=qualified && ElementFormDefault=qualified
+}

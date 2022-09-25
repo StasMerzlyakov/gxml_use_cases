@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type CardTypeTypeValidator struct {
@@ -21,8 +22,8 @@ func (cv *CardTypeTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *CardTypeTypeValidator) CheckValue(runes []rune) error {
-	return nil
+func (cv *CardTypeTypeValidator) CheckValue(runes []rune) (any, error) {
+	return xsd2.NewString(string(runes)), nil
 }
 
 func (cv *CardTypeTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -32,17 +33,17 @@ func (cv *CardTypeTypeValidator) AcceptElement(elementType xsd.ElementData) erro
 	return nil
 }
 
-func (cv *CardTypeTypeValidator) CompleteElement() error {
+func (cv *CardTypeTypeValidator) CompleteElement() (bool, error) {
 	acceptableStates := cardTypeTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardTypeTypeStateEnd) {
-		return nil
+		return false, nil
 	} else {
-		return cv.unexpectedEndOfElement()
+		return false, cv.unexpectedEndOfElement()
 	}
 }
 
-func (cv *CardTypeTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
-	return nil
+func (cv *CardTypeTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
+	return nil, nil
 }
 
 type cardTypeTypeState int

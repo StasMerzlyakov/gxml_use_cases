@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type ComplexDateTypeYearTypeValidator struct {
@@ -21,8 +22,8 @@ func (cv *ComplexDateTypeYearTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *ComplexDateTypeYearTypeValidator) CheckValue(runes []rune) error {
-	return nil
+func (cv *ComplexDateTypeYearTypeValidator) CheckValue(runes []rune) (any, error) {
+	return xsd2.NewGYear(string(runes))
 }
 
 func (cv *ComplexDateTypeYearTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -32,17 +33,17 @@ func (cv *ComplexDateTypeYearTypeValidator) AcceptElement(elementType xsd.Elemen
 	return nil
 }
 
-func (cv *ComplexDateTypeYearTypeValidator) CompleteElement() error {
+func (cv *ComplexDateTypeYearTypeValidator) CompleteElement() (bool, error) {
 	acceptableStates := complexDateTypeYearTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, complexDateTypeYearTypeStateEnd) {
-		return nil
+		return false, nil
 	} else {
-		return cv.unexpectedEndOfElement()
+		return false, cv.unexpectedEndOfElement()
 	}
 }
 
-func (cv *ComplexDateTypeYearTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
-	return nil
+func (cv *ComplexDateTypeYearTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
+	return nil, nil
 }
 
 type complexDateTypeYearTypeState int

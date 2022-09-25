@@ -6,6 +6,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/common"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type cardRequestTypeValidator struct {
@@ -63,13 +64,13 @@ func (cv *cardRequestTypeValidator) AcceptElement(elementType xsd.ElementData) e
 	}
 }
 
-func (cv *cardRequestTypeValidator) CompleteElement() error {
+func (cv *cardRequestTypeValidator) CompleteElement() (bool, error) {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := cardRequestTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardRequestTypeStateEnd) {
-		return nil
+		return true, nil
 	} else {
-		return cv.unexpectedEndOfElement()
+		return false, cv.unexpectedEndOfElement()
 	}
 }
 
@@ -105,29 +106,29 @@ var cardRequestTypeElementData5 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *cardRequestTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *cardRequestTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
 	switch elementData {
 	case cardRequestTypeElementData1:
 		validator1 := common.MiddleStringTypeValidator{}
-		return &validator1
+		return nil, &validator1
 	case cardRequestTypeElementData2:
 		validator2 := common.MiddleStringTypeValidator{}
-		return &validator2
+		return nil, &validator2
 	case cardRequestTypeElementData3:
 		validator3 := common.MiddleStringTypeValidator{}
-		return &validator3
+		return nil, &validator3
 	case cardRequestTypeElementData4:
 		nameAndNamespace := xsd.NameAndNamespace{
 			Namespace: elementData.Namespace,
 			Name:      elementData.Name,
 		}
 		validator4 := common.ResolveValidator(nameAndNamespace)
-		return validator4
+		return nil, validator4
 	case cardRequestTypeElementData5:
 		validator5 := common.CardTypeTypeValidator{}
-		return &validator5
+		return nil, &validator5
 	default:
-		return nil
+		return nil, nil
 	}
 }
 

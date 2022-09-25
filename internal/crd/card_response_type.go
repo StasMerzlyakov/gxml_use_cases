@@ -6,6 +6,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/common"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type cardResponseTypeValidator struct {
@@ -40,11 +41,11 @@ func (cv *cardResponseTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *cardResponseTypeValidator) CheckValue(runes []rune) error {
+func (cv *cardResponseTypeValidator) CheckValue(runes []rune) (any, error) {
 	if !util.IsEmpty(runes) {
-		return errors.New("value unexpected")
+		return nil, errors.New("value unexpected")
 	}
-	return nil
+	return nil, nil
 }
 
 func (cv *cardResponseTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -63,13 +64,13 @@ func (cv *cardResponseTypeValidator) AcceptElement(elementType xsd.ElementData) 
 	}
 }
 
-func (cv *cardResponseTypeValidator) CompleteElement() error {
+func (cv *cardResponseTypeValidator) CompleteElement() (bool, error) {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := cardResponseTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardResponseTypeStateEnd) {
-		return nil
+		return true, nil
 	} else {
-		return cv.unexpectedEndOfElement()
+		return false, cv.unexpectedEndOfElement()
 	}
 }
 
@@ -87,16 +88,17 @@ var cardResponseTypeElementData2 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
 	switch elementData {
 	case cardResponseTypeElementData1:
 		validator1 := common.CardDataTypeValidator{}
 		return &validator1
 	case cardResponseTypeElementData2:
 		validator2 := common.CvcTypeValidator{}
+		str := NewS
 		return &validator2
 	default:
-		return nil
+		return nil, nil
 	}
 }
 

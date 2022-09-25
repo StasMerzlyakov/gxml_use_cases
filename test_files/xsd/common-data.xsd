@@ -54,7 +54,7 @@
             <xsd:documentation xml:lang="ru">Дата рождения</xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="year">
+            <xsd:element name="Year">
                 <xsd:simpleType>
                     <xsd:restriction base="xsd:gYear">
                         <xsd:minInclusive value="1900"/>
@@ -62,8 +62,8 @@
                     </xsd:restriction>
                 </xsd:simpleType>
             </xsd:element>
-            <xsd:element name="month" minOccurs="0" type="xsd:gMonth"/>
-            <xsd:element name="day" minOccurs="0" type="xsd:gDay"/>
+            <xsd:element name="Month" minOccurs="0" type="xsd:gMonth"/>
+            <xsd:element name="Day" minOccurs="0" type="xsd:gDay"/>
         </xsd:sequence>
     </xsd:complexType>
 

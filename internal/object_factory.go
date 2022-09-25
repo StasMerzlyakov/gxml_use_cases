@@ -4,6 +4,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/common"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/crd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 var namespacesToPackageMap = map[string]string{
@@ -14,7 +15,7 @@ var namespacesToPackageMap = map[string]string{
 type Resolver struct {
 }
 
-func (Resolver) ResolveValidator(name xsd.NameAndNamespace) xsd.IElementValidator {
+func (Resolver) ResolveValidator(name xsd.NameAndNamespace) (any, xsd2.IElementValidator) {
 	if packageName, ok := namespacesToPackageMap[name.Namespace]; !ok {
 		return nil
 	} else {
@@ -24,7 +25,7 @@ func (Resolver) ResolveValidator(name xsd.NameAndNamespace) xsd.IElementValidato
 		case "common":
 			return common.ResolveValidator(name)
 		default:
-			return nil
+			return nil, nil
 		}
 	}
 }

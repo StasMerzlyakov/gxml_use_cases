@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type ComplexDateTypeValidator struct {
@@ -39,11 +40,11 @@ func (cv *ComplexDateTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *ComplexDateTypeValidator) CheckValue(runes []rune) error {
+func (cv *ComplexDateTypeValidator) CheckValue(runes []rune) (any, error) {
 	if !util.IsEmpty(runes) {
-		return errors.New("value unexpected")
+		return nil, errors.New("value unexpected")
 	}
-	return nil
+	return nil, nil
 }
 
 func (cv *ComplexDateTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -62,13 +63,13 @@ func (cv *ComplexDateTypeValidator) AcceptElement(elementType xsd.ElementData) e
 	}
 }
 
-func (cv *ComplexDateTypeValidator) CompleteElement() error {
+func (cv *ComplexDateTypeValidator) CompleteElement() (bool, error) {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := complexDateTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, complexDateTypeStateEnd) {
-		return nil
+		return true, nil
 	} else {
-		return cv.unexpectedEndOfElement()
+		return true, cv.unexpectedEndOfElement()
 	}
 }
 
@@ -76,35 +77,35 @@ type complexDateTypeState int
 
 var complexDateTypeElementData1 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
-	Name:      "year",
+	Name:      "Year",
 	Type:      xsd.ElementNode,
 }
 
 var complexDateTypeElementData2 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
-	Name:      "month",
+	Name:      "Month",
 	Type:      xsd.ElementNode,
 }
 
 var complexDateTypeElementData3 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
-	Name:      "day",
+	Name:      "Day",
 	Type:      xsd.ElementNode,
 }
 
-func (cv *ComplexDateTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *ComplexDateTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
 	switch elementData {
 	case complexDateTypeElementData1:
 		validator1 := ComplexDateTypeYearTypeValidator{}
-		return &validator1
+		return nil, &validator1
 	case complexDateTypeElementData2:
 		validator2 := ComplexDateTypeMonthTypeValidator{}
-		return &validator2
+		return nil, &validator2
 	case complexDateTypeElementData3:
 		validator3 := ComplexDateTypeDayTypeValidator{}
-		return &validator3
+		return nil, &validator3
 	default:
-		return nil
+		return nil, nil
 	}
 }
 

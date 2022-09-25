@@ -2,6 +2,7 @@ package crd
 
 import (
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 var cardRequestElement = xsd.NameAndNamespace{
@@ -14,14 +15,16 @@ var cardResponseElement = xsd.NameAndNamespace{
 	Name:      "CardResponse",
 }
 
-func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd.IElementValidator {
+func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) (any, xsd2.IElementValidator) {
 	switch nameAndNamespace {
 	case cardRequestElement:
 		cardRequestElementValidator := cardRequestTypeValidator{}
-		return &cardRequestElementValidator
+		str := CardRequestTypeStruct{}
+		return &str, &cardRequestElementValidator
 	case cardResponseElement:
+		str := CardResponseTypeStruct{}
 		cardResponseElementValidator := cardResponseTypeValidator{}
-		return &cardResponseElementValidator
+		return &str, &cardResponseElementValidator
 	}
 	return nil
 }

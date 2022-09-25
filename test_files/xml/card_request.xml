@@ -5,9 +5,9 @@
   <card:LastName>Иван</card:LastName>
   <card:Patronymic>Иванович</card:Patronymic>
   <cd:BirthDate>
-    <cd:year>1900</cd:year>
-    <cd:month>--09</cd:month>
-    <cd:day>---19</cd:day>
+    <cd:Year>1900</cd:Year>
+    <cd:Month>--09</cd:Month>
+    <cd:Day>---19</cd:Day>
   </cd:BirthDate>
   <card:CardType>MasterCard</card:CardType>
 </card:CardRequest>
