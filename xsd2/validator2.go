@@ -236,6 +236,7 @@ type IElementValidator interface {
 	CheckValue(runes []rune) (any, error)
 	ResolveValidator(elementData xsd.ElementData) IElementValidator
 	GetInstance() any
+	IsComplexType() bool
 
 	// TODO GetAttributeFormDefault and GetElementFormDefault support;
 	// current implementation work as AttributeFormDefault=qualified && ElementFormDefault=qualified
