@@ -64,14 +64,22 @@ func (cv *cardRequestTypeValidator) AcceptElement(elementType xsd.ElementData) e
 	}
 }
 
-func (cv *cardRequestTypeValidator) CompleteElement() (bool, error) {
+func (cv *cardRequestTypeValidator) CompleteElement() error {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := cardRequestTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardRequestTypeStateEnd) {
-		return true, nil
+		return nil
 	} else {
-		return false, cv.unexpectedEndOfElement()
+		return cv.unexpectedEndOfElement()
 	}
+}
+
+func (cv *cardRequestTypeValidator) GetInstance() (any, error) {
+	return NewCardRequestType(), nil
+}
+
+func (cv *cardRequestTypeValidator) IsComplexType() bool {
+	return true
 }
 
 type cardRequestTypeState int
@@ -106,29 +114,29 @@ var cardRequestTypeElementData5 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *cardRequestTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
+func (cv *cardRequestTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	switch elementData {
 	case cardRequestTypeElementData1:
 		validator1 := common.MiddleStringTypeValidator{}
-		return nil, &validator1
+		return &validator1
 	case cardRequestTypeElementData2:
 		validator2 := common.MiddleStringTypeValidator{}
-		return nil, &validator2
+		return &validator2
 	case cardRequestTypeElementData3:
 		validator3 := common.MiddleStringTypeValidator{}
-		return nil, &validator3
+		return &validator3
 	case cardRequestTypeElementData4:
 		nameAndNamespace := xsd.NameAndNamespace{
 			Namespace: elementData.Namespace,
 			Name:      elementData.Name,
 		}
 		validator4 := common.ResolveValidator(nameAndNamespace)
-		return nil, validator4
+		return validator4
 	case cardRequestTypeElementData5:
 		validator5 := common.CardTypeTypeValidator{}
-		return nil, &validator5
+		return &validator5
 	default:
-		return nil, nil
+		return nil
 	}
 }
 

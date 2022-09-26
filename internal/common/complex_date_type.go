@@ -40,11 +40,11 @@ func (cv *ComplexDateTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *ComplexDateTypeValidator) CheckValue(runes []rune) (any, error) {
+func (cv *ComplexDateTypeValidator) CheckValue(runes []rune) error {
 	if !util.IsEmpty(runes) {
-		return nil, errors.New("value unexpected")
+		return errors.New("value unexpected")
 	}
-	return nil, nil
+	return nil
 }
 
 func (cv *ComplexDateTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -63,13 +63,13 @@ func (cv *ComplexDateTypeValidator) AcceptElement(elementType xsd.ElementData) e
 	}
 }
 
-func (cv *ComplexDateTypeValidator) CompleteElement() (bool, error) {
+func (cv *ComplexDateTypeValidator) CompleteElement() error {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := complexDateTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, complexDateTypeStateEnd) {
-		return true, nil
+		return nil
 	} else {
-		return true, cv.unexpectedEndOfElement()
+		return cv.unexpectedEndOfElement()
 	}
 }
 
@@ -93,20 +93,28 @@ var complexDateTypeElementData3 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *ComplexDateTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
+func (cv *ComplexDateTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	switch elementData {
 	case complexDateTypeElementData1:
 		validator1 := ComplexDateTypeYearTypeValidator{}
-		return nil, &validator1
+		return &validator1
 	case complexDateTypeElementData2:
 		validator2 := ComplexDateTypeMonthTypeValidator{}
-		return nil, &validator2
+		return &validator2
 	case complexDateTypeElementData3:
 		validator3 := ComplexDateTypeDayTypeValidator{}
-		return nil, &validator3
+		return &validator3
 	default:
-		return nil, nil
+		return nil
 	}
+}
+
+func (cv *ComplexDateTypeValidator) GetInstance() (any, error) {
+	return NewComplexDateType(), nil
+}
+
+func (cv *ComplexDateTypeValidator) IsComplexType() bool {
+	return true
 }
 
 var complexDateTypeStateToElement = map[complexDateTypeState]xsd.ElementData{

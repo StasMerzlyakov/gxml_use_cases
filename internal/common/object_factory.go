@@ -10,7 +10,7 @@ var birthDateElement = xsd.NameAndNamespace{
 	Name:      "BirthDate",
 }
 
-func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) (any, xsd2.IElementValidator) {
+func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd2.IElementValidator {
 	switch nameAndNamespace {
 	case birthDateElement:
 		birthDateElementValidator := ComplexDateTypeValidator{}

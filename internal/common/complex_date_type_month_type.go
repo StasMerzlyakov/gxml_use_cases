@@ -6,10 +6,12 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"strings"
 )
 
 type ComplexDateTypeMonthTypeValidator struct {
 	state complexDateTypeMonthTypeState
+	sb    strings.Builder
 }
 
 func (cv *ComplexDateTypeMonthTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
@@ -22,8 +24,9 @@ func (cv *ComplexDateTypeMonthTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *ComplexDateTypeMonthTypeValidator) CheckValue(runes []rune) (any, error) {
-	return xsd2.NewGMonth(string(runes))
+func (cv *ComplexDateTypeMonthTypeValidator) CheckValue(runes []rune) error {
+	cv.sb.WriteString(string(runes))
+	return nil
 }
 
 func (cv *ComplexDateTypeMonthTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -33,17 +36,25 @@ func (cv *ComplexDateTypeMonthTypeValidator) AcceptElement(elementType xsd.Eleme
 	return nil
 }
 
-func (cv *ComplexDateTypeMonthTypeValidator) CompleteElement() (bool, error) {
+func (cv *ComplexDateTypeMonthTypeValidator) CompleteElement() error {
 	acceptableStates := complexMonthTypeYearTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, complexMonthTypeYearTypeStateEnd) {
-		return false, nil
+		return nil
 	} else {
-		return false, cv.unexpectedEndOfElement()
+		return cv.unexpectedEndOfElement()
 	}
 }
 
-func (cv *ComplexDateTypeMonthTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
-	return nil, nil
+func (cv *ComplexDateTypeMonthTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+	return nil
+}
+
+func (cv *ComplexDateTypeMonthTypeValidator) GetInstance() (any, error) {
+	return xsd2.NewGMonth(cv.sb.String())
+}
+
+func (cv *ComplexDateTypeMonthTypeValidator) IsComplexType() bool {
+	return false
 }
 
 type complexDateTypeMonthTypeState int

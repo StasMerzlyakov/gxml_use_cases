@@ -109,6 +109,14 @@ func (cv *CardDataTypeValidator) ResolveValidator(elementData xsd.ElementData) x
 	}
 }
 
+func (cv *CardDataTypeValidator) GetInstance() (any, error) {
+	return NewCardDataType(), nil
+}
+
+func (cv *CardDataTypeValidator) IsComplexType() bool {
+	return true
+}
+
 var cardDataTypeStateToElement = map[cardDataTypeState]xsd.ElementData{
 	cardDataTypeState1: cardDataTypeElementData1,
 	cardDataTypeState2: cardDataTypeElementData2,

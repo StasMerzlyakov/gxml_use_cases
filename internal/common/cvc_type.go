@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"strings"
 )
 
 type CvcTypeValidator struct {
 	state cvcTypeState
+	sb    strings.Builder
 }
 
 func (cv *CvcTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
@@ -22,6 +24,7 @@ func (cv *CvcTypeValidator) unexpectedEndOfElement() error {
 }
 
 func (cv *CvcTypeValidator) CheckValue(runes []rune) error {
+	cv.sb.WriteString()
 	return nil
 }
 

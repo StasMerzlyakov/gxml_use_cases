@@ -99,7 +99,6 @@ func (xv *Validator2) Validate() error {
 						// TODO проверка currentValidator.GetElementFormDefault
 						// elementPrefix = ...
 					}
-
 					elementNamespace, err := xv.XmlParser.GetNamespaceByPrefix(elementPrefix)
 					if err != nil {
 						return err
@@ -114,12 +113,13 @@ func (xv *Validator2) Validate() error {
 						return err
 					}
 
-					obj, nextValidator := currentValidator.ResolveValidator(elementData)
+					nextValidator := currentValidator.ResolveValidator(elementData)
 					if nextValidator == nil {
 						return fmt.Errorf("validator for %s not found", elementData.ToString())
 					}
 					elementValidatorStack.Push(nextValidator)
-					if obj != nil {
+					if nextValidator.IsComplexType() {
+						obj, _ := nextValidator.GetInstance()
 						methodName := "Set" + elementData.Name
 						reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
 						objectStack.Push(obj)
@@ -144,24 +144,27 @@ func (xv *Validator2) Validate() error {
 
 			case parser.ETagEnd, parser.EmptyElemEnd:
 				currentValidator := elementValidatorStack.Peek()
-				if popObj, err := currentValidator.CompleteElement(); err != nil {
+				if err := currentValidator.CompleteElement(); err != nil {
 					return err
-				} else {
-					if popObj {
-						objectStack.Pop()
-					}
 				}
-				elementValidatorStack.Pop()
-				elementStack.Pop()
+				if currentValidator.IsComplexType() {
+					objectStack.Pop()
+					elementValidatorStack.Pop()
+					elementStack.Pop()
+				} else {
+					obj, err := currentValidator.GetInstance()
+					if err != nil {
+						return err
+					}
+					currentElement := elementStack.Pop()
+					methodName := "Set" + currentElement.Name.Name
+					reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
+				}
+
 			case parser.CharData:
 				currentValidator := elementValidatorStack.Peek()
-				if value, err := currentValidator.CheckValue(token.Runes); err != nil {
+				if err := currentValidator.CheckValue(token.Runes); err != nil {
 					return err
-				} else {
-					if value != nil {
-						methodName := "Set" + elementStack.Peek().Name.Name
-						reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(value)})
-					}
 				}
 			case parser.Attr:
 				if inXmlDecl {
@@ -232,10 +235,10 @@ const xmlns = "xmlns"
 
 type IElementValidator interface {
 	AcceptElement(elementData xsd.ElementData) error
-	CompleteElement() (bool, error)
-	CheckValue(runes []rune) (any, error)
+	CompleteElement() error
+	CheckValue(runes []rune) error
 	ResolveValidator(elementData xsd.ElementData) IElementValidator
-	GetInstance() any
+	GetInstance() (any, error)
 	IsComplexType() bool
 
 	// TODO GetAttributeFormDefault and GetElementFormDefault support;

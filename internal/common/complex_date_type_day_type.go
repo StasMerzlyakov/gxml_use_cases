@@ -6,10 +6,12 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"strings"
 )
 
 type ComplexDateTypeDayTypeValidator struct {
 	state complexDateTypeDayTypeState
+	sb    strings.Builder
 }
 
 func (cv *ComplexDateTypeDayTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
@@ -22,8 +24,9 @@ func (cv *ComplexDateTypeDayTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *ComplexDateTypeDayTypeValidator) CheckValue(runes []rune) (any, error) {
-	return xsd2.NewGDay(string(runes))
+func (cv *ComplexDateTypeDayTypeValidator) CheckValue(runes []rune) error {
+	cv.sb.WriteString(string(runes))
+	return nil
 }
 
 func (cv *ComplexDateTypeDayTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -33,17 +36,25 @@ func (cv *ComplexDateTypeDayTypeValidator) AcceptElement(elementType xsd.Element
 	return nil
 }
 
-func (cv *ComplexDateTypeDayTypeValidator) CompleteElement() (bool, error) {
+func (cv *ComplexDateTypeDayTypeValidator) CompleteElement() error {
 	acceptableStates := complexDateTypeDayTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, complexDateTypeDayTypeStateEnd) {
-		return false, nil
+		return nil
 	} else {
-		return false, cv.unexpectedEndOfElement()
+		return cv.unexpectedEndOfElement()
 	}
 }
 
-func (cv *ComplexDateTypeDayTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
-	return nil, nil
+func (cv *ComplexDateTypeDayTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+	return nil
+}
+
+func (cv *ComplexDateTypeDayTypeValidator) GetInstance() (any, error) {
+	return xsd2.NewGDay(cv.sb.String())
+}
+
+func (cv *ComplexDateTypeDayTypeValidator) IsComplexType() bool {
+	return false
 }
 
 type complexDateTypeDayTypeState int

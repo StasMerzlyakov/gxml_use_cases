@@ -6,10 +6,12 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"strings"
 )
 
 type MiddleStringTypeValidator struct {
 	state middleStringTypeState
+	sb    strings.Builder
 }
 
 func (cv *MiddleStringTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
@@ -22,8 +24,9 @@ func (cv *MiddleStringTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *MiddleStringTypeValidator) CheckValue(runes []rune) (any, error) {
-	return xsd2.NewString(string(runes))
+func (cv *MiddleStringTypeValidator) CheckValue(runes []rune) error {
+	cv.sb.WriteString(string(runes))
+	return nil
 }
 
 func (cv *MiddleStringTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -33,17 +36,25 @@ func (cv *MiddleStringTypeValidator) AcceptElement(elementType xsd.ElementData) 
 	return nil
 }
 
-func (cv *MiddleStringTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
-	return nil, nil
+func (cv *MiddleStringTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+	return nil
 }
 
-func (cv *MiddleStringTypeValidator) CompleteElement() (bool, error) {
+func (cv *MiddleStringTypeValidator) CompleteElement() error {
 	acceptableStates := middleStringTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, middleStringTypeStateEnd) {
-		return false, nil
+		return nil
 	} else {
-		return false, cv.unexpectedEndOfElement()
+		return cv.unexpectedEndOfElement()
 	}
+}
+
+func (cv *MiddleStringTypeValidator) GetInstance() (any, error) {
+	return xsd2.NewString(cv.sb.String())
+}
+
+func (cv *MiddleStringTypeValidator) IsComplexType() bool {
+	return false
 }
 
 type middleStringTypeState int

@@ -31,3 +31,8 @@ func (sv *CardResponseTypeStruct) GetCVC() xsd2.String {
 func (sv *CardResponseTypeStruct) SetCVC(value xsd2.String) {
 	sv.CVC = value
 }
+
+func NewCardResponseType() CardResponseType {
+	obj := CardResponseTypeStruct{}
+	return &obj
+}

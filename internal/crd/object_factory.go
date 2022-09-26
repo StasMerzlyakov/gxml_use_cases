@@ -15,16 +15,14 @@ var cardResponseElement = xsd.NameAndNamespace{
 	Name:      "CardResponse",
 }
 
-func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) (any, xsd2.IElementValidator) {
+func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd2.IElementValidator {
 	switch nameAndNamespace {
 	case cardRequestElement:
-		cardRequestElementValidator := cardRequestTypeValidator{}
-		str := CardRequestTypeStruct{}
-		return &str, &cardRequestElementValidator
+		str := cardRequestTypeValidator{}
+		return &str
 	case cardResponseElement:
 		str := CardResponseTypeStruct{}
-		cardResponseElementValidator := cardResponseTypeValidator{}
-		return &str, &cardResponseElementValidator
+		return &str
 	}
 	return nil
 }

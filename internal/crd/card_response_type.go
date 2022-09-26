@@ -41,11 +41,11 @@ func (cv *cardResponseTypeValidator) unexpectedEndOfElement() error {
 	return errors.New(result)
 }
 
-func (cv *cardResponseTypeValidator) CheckValue(runes []rune) (any, error) {
+func (cv *cardResponseTypeValidator) CheckValue(runes []rune) error {
 	if !util.IsEmpty(runes) {
-		return nil, errors.New("value unexpected")
+		return errors.New("value unexpected")
 	}
-	return nil, nil
+	return nil
 }
 
 func (cv *cardResponseTypeValidator) AcceptElement(elementType xsd.ElementData) error {
@@ -64,14 +64,22 @@ func (cv *cardResponseTypeValidator) AcceptElement(elementType xsd.ElementData) 
 	}
 }
 
-func (cv *cardResponseTypeValidator) CompleteElement() (bool, error) {
+func (cv *cardResponseTypeValidator) CompleteElement() error {
 	// Проверка достижимости конечного состояния из текущего
 	acceptableStates := cardResponseTypeStateAcceptableMap[cv.state]
 	if util.Contains(acceptableStates, cardResponseTypeStateEnd) {
-		return true, nil
+		return nil
 	} else {
-		return false, cv.unexpectedEndOfElement()
+		return cv.unexpectedEndOfElement()
 	}
+}
+
+func (cv *cardResponseTypeValidator) GetInstance() (any, error) {
+	return NewCardResponseType(), nil
+}
+
+func (cv *cardResponseTypeValidator) IsComplexType() bool {
+	return true
 }
 
 type cardResponseTypeState int
@@ -88,17 +96,16 @@ var cardResponseTypeElementData2 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) (any, xsd2.IElementValidator) {
+func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	switch elementData {
 	case cardResponseTypeElementData1:
 		validator1 := common.CardDataTypeValidator{}
 		return &validator1
 	case cardResponseTypeElementData2:
 		validator2 := common.CvcTypeValidator{}
-		str := NewS
 		return &validator2
 	default:
-		return nil, nil
+		return nil
 	}
 }
 
