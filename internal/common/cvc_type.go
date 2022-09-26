@@ -57,6 +57,10 @@ func (cv *CvcTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *CvcTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type cvcTypeState int
 
 var cvcTypeStateAcceptableMap = map[cvcTypeState][]cvcTypeState{

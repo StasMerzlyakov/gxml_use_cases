@@ -6,6 +6,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"golang.org/x/exp/maps"
 )
 
 type ComplexDateTypeValidator struct {
@@ -71,6 +72,10 @@ func (cv *ComplexDateTypeValidator) CompleteElement() error {
 	} else {
 		return cv.unexpectedEndOfElement()
 	}
+}
+
+func (cv *ComplexDateTypeValidator) GetStates() []xsd.ElementData {
+	return maps.Values(complexDateTypeStateToElement)
 }
 
 type complexDateTypeState int

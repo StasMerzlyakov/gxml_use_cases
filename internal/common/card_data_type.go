@@ -6,6 +6,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"golang.org/x/exp/maps"
 )
 
 type CardDataTypeValidator struct {
@@ -115,6 +116,10 @@ func (cv *CardDataTypeValidator) GetInstance() (any, error) {
 
 func (cv *CardDataTypeValidator) IsComplexType() bool {
 	return true
+}
+
+func (cv *CardDataTypeValidator) GetStates() []xsd.ElementData {
+	return maps.Values(cardDataTypeStateToElement)
 }
 
 var cardDataTypeStateToElement = map[cardDataTypeState]xsd.ElementData{

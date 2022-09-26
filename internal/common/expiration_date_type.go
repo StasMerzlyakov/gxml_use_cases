@@ -57,6 +57,10 @@ func (cv *ExpirationDateTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *ExpirationDateTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type expirationDateTypeState int
 
 var expirationDateTypeStateAcceptableMap = map[expirationDateTypeState][]expirationDateTypeState{

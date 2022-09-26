@@ -6,6 +6,7 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"golang.org/x/exp/maps"
 )
 
 type ValidityPeriodTypeValidator struct {
@@ -85,6 +86,10 @@ var validityPeriodTypeElementData2 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/common-data",
 	Name:      "To",
 	Type:      xsd.ElementNode,
+}
+
+func (cv *ValidityPeriodTypeValidator) GetStates() []xsd.ElementData {
+	return maps.Values(validityPeriodTypeStateToElement)
 }
 
 func (cv *ValidityPeriodTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {

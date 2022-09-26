@@ -57,6 +57,10 @@ func (cv *CardNumberTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *CardNumberTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type cardNumberTypeState int
 
 var cardNumberTypeStateAcceptableMap = map[cardNumberTypeState][]cardNumberTypeState{

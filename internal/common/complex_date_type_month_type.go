@@ -57,6 +57,10 @@ func (cv *ComplexDateTypeMonthTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *ComplexDateTypeMonthTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type complexDateTypeMonthTypeState int
 
 var complexMonthTypeYearTypeStateAcceptableMap = map[complexDateTypeMonthTypeState][]complexDateTypeMonthTypeState{

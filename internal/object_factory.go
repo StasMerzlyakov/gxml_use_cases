@@ -15,6 +15,10 @@ var namespacesToPackageMap = map[string]string{
 type Resolver struct {
 }
 
+func (Resolver) GetNamespacesMap() map[string]string {
+	return namespacesToPackageMap
+}
+
 func (Resolver) ResolveValidator(name xsd.NameAndNamespace) xsd2.IElementValidator {
 	if packageName, ok := namespacesToPackageMap[name.Namespace]; !ok {
 		return nil

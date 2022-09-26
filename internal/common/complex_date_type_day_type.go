@@ -57,6 +57,10 @@ func (cv *ComplexDateTypeDayTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *ComplexDateTypeDayTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type complexDateTypeDayTypeState int
 
 var complexDateTypeDayTypeStateAcceptableMap = map[complexDateTypeDayTypeState][]complexDateTypeDayTypeState{

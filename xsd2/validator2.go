@@ -1,6 +1,7 @@
 package xsd2
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/parser"
 	"github.com/StasMerzlyakov/gxml/util"
@@ -11,11 +12,12 @@ import (
 
 type IXsdValidator2 interface {
 	Validate() (any, error)
+	Write(writer bufio.Writer, any, name xsd.NameAndNamespace) error
 }
 
-// TODO - ResolveValidator()
 type IValidatorResolver interface {
 	ResolveValidator(nameAndNamespace xsd.NameAndNamespace) IElementValidator
+	GetNamespacesMap() map[string]string
 }
 
 type Validator2 struct {
@@ -69,6 +71,26 @@ func (s *elementValidatorStack) IsEmpty() bool {
 func (s *elementValidatorStack) Peek() (v IElementValidator) {
 	l := len(s.data)
 	return s.data[l-1]
+}
+
+func (xv *Validator2) writeElement(writer bufio.Writer, any, validator IElementValidator) error {
+	for _, state := range validator.GetStates() {
+
+	}
+}
+
+func (xv *Validator2) Write(writer bufio.Writer, any, name xsd.NameAndNamespace) error {
+	var objectStack anyStack
+	var elementValidatorStack elementValidatorStack
+	objectStack.Push(any)
+	currentValidator := xv.Resolver.ResolveValidator(name)
+	elementValidatorStack.Push(currentValidator)
+
+	for {
+
+	}
+
+	return nil
 }
 
 func (xv *Validator2) Validate() (any, error) {
@@ -261,7 +283,7 @@ type IElementValidator interface {
 	ResolveValidator(elementData xsd.ElementData) IElementValidator
 	GetInstance() (any, error)
 	IsComplexType() bool
-	//GetStates() []xsd.ElementData
+	GetStates() []xsd.ElementData
 	//GetValue() string
 	// TODO GetAttributeFormDefault and GetElementFormDefault support;
 	// current implementation work as AttributeFormDefault=qualified && ElementFormDefault=qualified

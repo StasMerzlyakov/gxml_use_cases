@@ -57,6 +57,10 @@ func (cv *MiddleStringTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *MiddleStringTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type middleStringTypeState int
 
 var middleStringTypeStateAcceptableMap = map[middleStringTypeState][]middleStringTypeState{

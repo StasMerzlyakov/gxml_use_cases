@@ -57,6 +57,10 @@ func (cv *DateTimeTypeValidator) IsComplexType() bool {
 	return false
 }
 
+func (cv *DateTimeTypeValidator) GetStates() []xsd.ElementData {
+	return nil
+}
+
 type dateTimeTypeState int
 
 var dateTimeTypeStateAcceptableMap = map[dateTimeTypeState][]dateTimeTypeState{
