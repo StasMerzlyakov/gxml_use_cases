@@ -246,7 +246,8 @@ type IElementValidator interface {
 	ResolveValidator(elementData xsd.ElementData) IElementValidator
 	GetInstance() (any, error)
 	IsComplexType() bool
-
+	GetStates() []xsd.ElementData
+	GetValue() string
 	// TODO GetAttributeFormDefault and GetElementFormDefault support;
 	// current implementation work as AttributeFormDefault=qualified && ElementFormDefault=qualified
 }
