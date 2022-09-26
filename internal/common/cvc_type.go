@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"strings"
 )
 
@@ -24,7 +25,7 @@ func (cv *CvcTypeValidator) unexpectedEndOfElement() error {
 }
 
 func (cv *CvcTypeValidator) CheckValue(runes []rune) error {
-	cv.sb.WriteString()
+	cv.sb.WriteString(string(runes))
 	return nil
 }
 
@@ -44,8 +45,16 @@ func (cv *CvcTypeValidator) CompleteElement() error {
 	}
 }
 
-func (cv *CvcTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *CvcTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	return nil
+}
+
+func (cv *CvcTypeValidator) GetInstance() (any, error) {
+	return xsd2.NewString(cv.sb.String())
+}
+
+func (cv *CvcTypeValidator) IsComplexType() bool {
+	return false
 }
 
 type cvcTypeState int

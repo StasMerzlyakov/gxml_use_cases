@@ -15,7 +15,7 @@ var namespacesToPackageMap = map[string]string{
 type Resolver struct {
 }
 
-func (Resolver) ResolveValidator(name xsd.NameAndNamespace) (any, xsd2.IElementValidator) {
+func (Resolver) ResolveValidator(name xsd.NameAndNamespace) xsd2.IElementValidator {
 	if packageName, ok := namespacesToPackageMap[name.Namespace]; !ok {
 		return nil
 	} else {
@@ -25,7 +25,7 @@ func (Resolver) ResolveValidator(name xsd.NameAndNamespace) (any, xsd2.IElementV
 		case "common":
 			return common.ResolveValidator(name)
 		default:
-			return nil, nil
+			return nil
 		}
 	}
 }

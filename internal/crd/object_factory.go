@@ -21,7 +21,7 @@ func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd2.IElementValida
 		str := cardRequestTypeValidator{}
 		return &str
 	case cardResponseElement:
-		str := CardResponseTypeStruct{}
+		str := cardResponseTypeValidator{}
 		return &str
 	}
 	return nil
