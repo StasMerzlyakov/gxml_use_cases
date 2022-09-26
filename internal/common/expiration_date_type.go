@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"strings"
 )
 
 type ExpirationDateTypeValidator struct {
 	state expirationDateTypeState
+	sb    strings.Builder
 }
 
 func (cv *ExpirationDateTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
@@ -22,6 +25,7 @@ func (cv *ExpirationDateTypeValidator) unexpectedEndOfElement() error {
 }
 
 func (cv *ExpirationDateTypeValidator) CheckValue(runes []rune) error {
+	cv.sb.WriteString(string(runes))
 	return nil
 }
 
@@ -41,8 +45,16 @@ func (cv *ExpirationDateTypeValidator) CompleteElement() error {
 	}
 }
 
-func (cv *ExpirationDateTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *ExpirationDateTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	return nil
+}
+
+func (cv *ExpirationDateTypeValidator) GetInstance() (any, error) {
+	return xsd2.NewString(cv.sb.String())
+}
+
+func (cv *ExpirationDateTypeValidator) IsComplexType() bool {
+	return false
 }
 
 type expirationDateTypeState int

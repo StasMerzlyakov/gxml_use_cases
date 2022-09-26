@@ -96,13 +96,13 @@ var cardDataTypeElementData3 = xsd.ElementData{
 func (cv *CardDataTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	switch elementData {
 	case cardDataTypeElementData1:
-		validator1 := ComplexDateTypeYearTypeValidator{}
+		validator1 := CardTypeTypeValidator{}
 		return &validator1
 	case cardDataTypeElementData2:
-		validator2 := ComplexDateTypeMonthTypeValidator{}
+		validator2 := CardNumberTypeValidator{}
 		return &validator2
 	case cardDataTypeElementData3:
-		validator3 := ComplexDateTypeDayTypeValidator{}
+		validator3 := ExpirationDateTypeValidator{}
 		return &validator3
 	default:
 		return nil

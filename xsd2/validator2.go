@@ -10,7 +10,7 @@ import (
 )
 
 type IXsdValidator2 interface {
-	Validate() error
+	Validate() (any, error)
 }
 
 type IValidatorResolver interface {
@@ -70,17 +70,18 @@ func (s *elementValidatorStack) Peek() (v IElementValidator) {
 	return s.data[l-1]
 }
 
-func (xv *Validator2) Validate() error {
+func (xv *Validator2) Validate() (any, error) {
 	var elementStack util.Stack[parser.Element]
 	var objectStack anyStack
 	var elementValidatorStack elementValidatorStack
+	var rootObject any
 	inXmlDecl := false
 	for {
 		if token, err := xv.XmlParser.Next(); err != nil {
-			return err
+			return nil, err
 		} else {
 			if token == nil {
-				return nil
+				return rootObject, nil
 			}
 			switch token.XmlEventType {
 			case parser.XMLDeclStart:
@@ -101,7 +102,7 @@ func (xv *Validator2) Validate() error {
 					}
 					elementNamespace, err := xv.XmlParser.GetNamespaceByPrefix(elementPrefix)
 					if err != nil {
-						return err
+						return nil, err
 					}
 
 					elementData := xsd.ElementData{
@@ -110,25 +111,26 @@ func (xv *Validator2) Validate() error {
 						Type:      xsd.ElementNode,
 					}
 					if err := currentValidator.AcceptElement(elementData); err != nil {
-						return err
+						return nil, err
 					}
 
 					nextValidator := currentValidator.ResolveValidator(elementData)
 					if nextValidator == nil {
-						return fmt.Errorf("validator for %s not found", elementData.ToString())
+						return nil, fmt.Errorf("validator for %s not found", elementData.ToString())
 					}
 					elementValidatorStack.Push(nextValidator)
 					if nextValidator.IsComplexType() {
 						obj, _ := nextValidator.GetInstance()
 						methodName := "Set" + elementData.Name
-						reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
+						parentObj := objectStack.Peek()
+						reflect.ValueOf(parentObj).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
 						objectStack.Push(obj)
 					}
 				} else {
 					elementName := xv.XmlParser.CurrentElement().Name
 					namespace, err := xv.XmlParser.GetNamespaceByPrefix(elementName.Prefix)
 					if err != nil {
-						return err
+						return nil, err
 					}
 					nameAndNamespace := xsd.NameAndNamespace{
 						Namespace: namespace,
@@ -136,7 +138,12 @@ func (xv *Validator2) Validate() error {
 					}
 					nextValidator := xv.Resolver.ResolveValidator(nameAndNamespace)
 					if nextValidator == nil {
-						return fmt.Errorf("validator for %s not found", nameAndNamespace.ToString())
+						return nil, fmt.Errorf("validator for %s not found", nameAndNamespace.ToString())
+					}
+					if nextValidator.IsComplexType() {
+						obj, _ := nextValidator.GetInstance()
+						rootObject = obj
+						objectStack.Push(obj)
 					}
 					elementValidatorStack.Push(nextValidator)
 				}
@@ -145,26 +152,25 @@ func (xv *Validator2) Validate() error {
 			case parser.ETagEnd, parser.EmptyElemEnd:
 				currentValidator := elementValidatorStack.Peek()
 				if err := currentValidator.CompleteElement(); err != nil {
-					return err
+					return nil, err
 				}
 				if currentValidator.IsComplexType() {
 					objectStack.Pop()
-					elementValidatorStack.Pop()
 					elementStack.Pop()
 				} else {
 					obj, err := currentValidator.GetInstance()
 					if err != nil {
-						return err
+						return nil, err
 					}
 					currentElement := elementStack.Pop()
 					methodName := "Set" + currentElement.Name.Name
 					reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
 				}
-
+				elementValidatorStack.Pop()
 			case parser.CharData:
 				currentValidator := elementValidatorStack.Peek()
 				if err := currentValidator.CheckValue(token.Runes); err != nil {
-					return err
+					return nil, err
 				}
 			case parser.Attr:
 				if inXmlDecl {
@@ -173,7 +179,7 @@ func (xv *Validator2) Validate() error {
 				currentAttribute := parseAttribute(string(token.Runes))
 				if currentAttribute.Prefix != xmlns {
 					if elementValidatorStack.IsEmpty() {
-						return fmt.Errorf("attribute must be in element")
+						return nil, fmt.Errorf("attribute must be in element")
 					}
 					currentValidator := elementValidatorStack.Peek()
 					attributePrefix := currentAttribute.Prefix
@@ -182,7 +188,7 @@ func (xv *Validator2) Validate() error {
 						// attributePrefix = ...
 					}
 					if attributeNamespace, err := xv.XmlParser.GetNamespaceByPrefix(attributePrefix); err != nil {
-						return err
+						return nil, err
 					} else {
 						elementData := xsd.ElementData{
 							Namespace: attributeNamespace,
@@ -190,7 +196,7 @@ func (xv *Validator2) Validate() error {
 							Type:      xsd.AttributeNode,
 						}
 						if err := currentValidator.AcceptElement(elementData); err != nil {
-							return err
+							return nil, err
 						}
 					}
 				}

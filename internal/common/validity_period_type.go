@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 type ValidityPeriodTypeValidator struct {
@@ -86,7 +87,7 @@ var validityPeriodTypeElementData2 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *ValidityPeriodTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *ValidityPeriodTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	switch elementData {
 	case validityPeriodTypeElementData1:
 		validator1 := DateTimeTypeValidator{}
@@ -97,6 +98,14 @@ func (cv *ValidityPeriodTypeValidator) ResolveValidator(elementData xsd.ElementD
 	default:
 		return nil
 	}
+}
+
+func (cv *ValidityPeriodTypeValidator) GetInstance() (any, error) {
+	return NewValidityPeriodType(), nil
+}
+
+func (cv *ValidityPeriodTypeValidator) IsComplexType() bool {
+	return true
 }
 
 var validityPeriodTypeStateToElement = map[validityPeriodTypeState]xsd.ElementData{

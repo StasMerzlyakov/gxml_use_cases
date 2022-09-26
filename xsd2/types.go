@@ -135,7 +135,7 @@ func (str gDayStruct) GetValue() int {
 
 func NewGDay(value string) (GDay, error) {
 
-	matched, err := regexp.MatchString("----\\d{2}", value)
+	matched, err := regexp.MatchString("---\\d{2}", value)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func NewGDay(value string) (GDay, error) {
 		return nil, fmt.Errorf("value %s not match gDay pattern", value)
 	}
 
-	value = value[4:6]
+	value = value[3:5]
 
 	intVar, err := strconv.Atoi(value)
 	if err != nil {

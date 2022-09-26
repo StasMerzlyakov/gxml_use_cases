@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
+	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+	"strings"
 )
 
 type CardNumberTypeValidator struct {
 	state cardNumberTypeState
+	sb    strings.Builder
 }
 
 func (cv *CardNumberTypeValidator) unexpectedElementError(elementType xsd.ElementData) error {
@@ -22,6 +25,7 @@ func (cv *CardNumberTypeValidator) unexpectedEndOfElement() error {
 }
 
 func (cv *CardNumberTypeValidator) CheckValue(runes []rune) error {
+	cv.sb.WriteString(string(runes))
 	return nil
 }
 
@@ -41,8 +45,16 @@ func (cv *CardNumberTypeValidator) CompleteElement() error {
 	}
 }
 
-func (cv *CardNumberTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
+func (cv *CardNumberTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	return nil
+}
+
+func (cv *CardNumberTypeValidator) GetInstance() (any, error) {
+	return xsd2.NewString(cv.sb.String())
+}
+
+func (cv *CardNumberTypeValidator) IsComplexType() bool {
+	return false
 }
 
 type cardNumberTypeState int

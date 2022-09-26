@@ -50,7 +50,7 @@ func (cv *CardTypeTypeValidator) ResolveValidator(elementData xsd.ElementData) x
 }
 
 func (cv *CardTypeTypeValidator) GetInstance() (any, error) {
-	return xsd2.NewString(cv.sb.String()), nil
+	return xsd2.NewString(cv.sb.String())
 }
 
 func (cv *CardTypeTypeValidator) IsComplexType() bool {
