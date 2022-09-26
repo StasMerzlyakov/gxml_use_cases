@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <card:CardResponse xmlns:card="https://github.com/StasMerzlyakov/gxml/card-service"
-                   xmlns:com="https://github.com/StasMerzlyakov/gxml/common-data">
+                   xmlns:com="https://github.com/StasMerzlyakov/gxml/common-data"
+                   card:CVC="123">
     <card:CardData>
         <com:CardType>MasterCard</com:CardType>
         <com:CardNumber>0123 2345 4567 6789</com:CardNumber>
         <com:ExpirationDate>11/23</com:ExpirationDate>
     </card:CardData>
-    <card:CVC>123</card:CVC>
 </card:CardResponse>
 
 

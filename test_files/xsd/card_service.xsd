@@ -25,8 +25,8 @@
     <xsd:complexType name="CardResponseType">
         <xsd:sequence>
             <xsd:element name="CardData" type="cd:CardDataType"/>
-            <xsd:element name="CVC" type="cd:CVCType"/>
         </xsd:sequence>
+        <xsd:attribute name="CVC" type="cd:CVCType"/>
     </xsd:complexType>
 
 </xsd:schema>

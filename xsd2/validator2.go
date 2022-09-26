@@ -13,6 +13,7 @@ type IXsdValidator2 interface {
 	Validate() (any, error)
 }
 
+// TODO - ResolveValidator()
 type IValidatorResolver interface {
 	ResolveValidator(nameAndNamespace xsd.NameAndNamespace) IElementValidator
 }
@@ -198,6 +199,18 @@ func (xv *Validator2) Validate() (any, error) {
 						if err := currentValidator.AcceptElement(elementData); err != nil {
 							return nil, err
 						}
+						nextValidator := currentValidator.ResolveValidator(elementData)
+						if nextValidator == nil {
+							return nil, fmt.Errorf("validator for %s not found", elementData.ToString())
+						}
+						nextValidator.CheckValue([]rune(currentAttribute.Value))
+
+						obj, err := nextValidator.GetInstance()
+						if err != nil {
+							return nil, err
+						}
+						methodName := "Set" + currentAttribute.Name
+						reflect.ValueOf(objectStack.Peek()).MethodByName(methodName).Call([]reflect.Value{reflect.ValueOf(obj)})
 					}
 				}
 			}
@@ -210,6 +223,8 @@ const attrValueDelimiter = "="
 func parseAttribute(attributeDecl string) parser.Attribute {
 	list := strings.Split(attributeDecl, attrValueDelimiter)
 	value := list[1]
+	value = value[1 : len(value)-1]
+
 	prefixAndName := parseElementName(list[0])
 	return parser.Attribute{Value: value, Name: prefixAndName.Name, Prefix: prefixAndName.Prefix}
 }
@@ -246,8 +261,8 @@ type IElementValidator interface {
 	ResolveValidator(elementData xsd.ElementData) IElementValidator
 	GetInstance() (any, error)
 	IsComplexType() bool
-	GetStates() []xsd.ElementData
-	GetValue() string
+	//GetStates() []xsd.ElementData
+	//GetValue() string
 	// TODO GetAttributeFormDefault and GetElementFormDefault support;
 	// current implementation work as AttributeFormDefault=qualified && ElementFormDefault=qualified
 }

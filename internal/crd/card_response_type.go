@@ -86,23 +86,23 @@ type cardResponseTypeState int
 
 var cardResponseTypeElementData1 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/card-service",
-	Name:      "CardData",
-	Type:      xsd.ElementNode,
+	Name:      "CVC",
+	Type:      xsd.AttributeNode,
 }
 
 var cardResponseTypeElementData2 = xsd.ElementData{
 	Namespace: "https://github.com/StasMerzlyakov/gxml/card-service",
-	Name:      "CVC",
+	Name:      "CardData",
 	Type:      xsd.ElementNode,
 }
 
 func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
 	switch elementData {
 	case cardResponseTypeElementData1:
-		validator1 := common.CardDataTypeValidator{}
+		validator1 := common.CvcTypeValidator{}
 		return &validator1
 	case cardResponseTypeElementData2:
-		validator2 := common.CvcTypeValidator{}
+		validator2 := common.CardDataTypeValidator{}
 		return &validator2
 	default:
 		return nil
