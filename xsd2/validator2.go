@@ -12,7 +12,7 @@ import (
 
 type IXsdValidator2 interface {
 	Validate() (any, error)
-	Write(writer bufio.Writer, any, name xsd.NameAndNamespace) error
+	Write(writer *bufio.Writer, obj any, name xsd.NameAndNamespace) error
 }
 
 type IValidatorResolver interface {
@@ -73,53 +73,142 @@ func (s *elementValidatorStack) Peek() (v IElementValidator) {
 	return s.data[l-1]
 }
 
-func (xv *Validator2) writeElement(writer bufio.Writer, parentObj any, validator IElementValidator, tab string) error {
-	for _, state := range validator.GetStates() {
-		methodName := "Get" + state.Name
-		value := reflect.ValueOf(parentObj).MethodByName(methodName).Call([]reflect.Value{})[0]
-		if value.IsNil() {
-			continue
+func (xv *Validator2) writeElement(writer *bufio.Writer,
+	obj any,
+	currentValidator IElementValidator,
+	tab string,
+	element xsd.ElementData) error {
+
+	prefix := xv.Resolver.GetNamespacesMap()[element.Namespace]
+
+	if !currentValidator.IsComplexType() {
+		vl := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+		if len(vl) > 0 {
+			writer.WriteString(fmt.Sprintf("%s<%s:%s", tab, prefix, element.Name))
+			writer.WriteString(">")
+			writer.WriteString(vl)
+			writer.WriteString(fmt.Sprintf("</%s:%s>\n", prefix, element.Name))
 		}
-		obj := value.Interface()
-		prefix := xv.Resolver.GetNamespacesMap()[state.Namespace]
-		if !validator.IsComplexType() {
-			vl := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
-			switch state.Type {
-			case xsd.ElementNode:
-				{
-					writer.WriteString(fmt.Sprintf(tab+"<%s:%s>", prefix, state.Name))
-					writer.WriteString(vl)
-					writer.WriteString(fmt.Sprintf(tab+"</%s:%s>", prefix, state.Name))
-				}
-			case xsd.AttributeNode:
-				{
-					writer.WriteString(fmt.Sprintf(" %s:%s=\"", prefix, state.Name))
-					writer.WriteString(vl)
-					writer.WriteString("\"")
-				}
+		return nil
+	} else {
+		writer.WriteString(fmt.Sprintf("%s<%s:%s", tab, prefix, element.Name))
+		isNotNullElementsFound := false
+		for _, state := range currentValidator.GetStates() {
+			methodName := "Get" + state.Name
+			value := reflect.ValueOf(obj).MethodByName(methodName).Call([]reflect.Value{})[0]
+			if value.IsNil() {
+				continue
 			}
-		} else {
-			if tab == "" {
-				writer.WriteString(tab + fmt.Sprintf("<%s:%s", prefix, state.Name))
-				for k, v := range xv.Resolver.GetNamespacesMap() {
-					writer.WriteString(fmt.Sprintf("\n    xmlns:%s=\"%s\"", v, k))
-				}
+			if state.Type == xsd.ElementNode && !isNotNullElementsFound {
+				isNotNullElementsFound = true
 				writer.WriteString(">\n")
-			} else {
-				writer.WriteString(tab + fmt.Sprintf("<%s:%s>\n", prefix, state.Name))
 			}
-			nextValidator := validator.ResolveValidator(state)
-			xv.writeElement(writer, obj, nextValidator, tab+"  ")
-			writer.WriteString(tab + fmt.Sprintf("</%s:%s>\n", prefix, state.Name))
+
+			obj := value.Interface()
+			prefix := xv.Resolver.GetNamespacesMap()[state.Namespace]
+
+			if state.Type == xsd.ElementNode {
+				nextValidator := currentValidator.ResolveValidator(state)
+				if nextValidator.IsComplexType() {
+					err := xv.writeElement(writer, obj, nextValidator, " ", state)
+					if err != nil {
+						return err
+					}
+				} else {
+					writer.WriteString(fmt.Sprintf("  <%s:%s>", prefix, state.Name))
+					value := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+					writer.WriteString(value)
+					writer.WriteString(fmt.Sprintf("</%s:%s>\n", prefix, state.Name))
+				}
+			}
+
+			if state.Type == xsd.AttributeNode {
+
+				nextValidator := currentValidator.ResolveValidator(state)
+				if nextValidator.IsComplexType() {
+					return fmt.Errorf("attribute type have to be simple")
+				}
+				value := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+				writer.WriteString(fmt.Sprintf(" %s:%s=\"%s\"", prefix, state.Name, value))
+			}
+		}
+
+		if !isNotNullElementsFound {
+			writer.WriteString("/>\n")
+		} else {
+			writer.WriteString(fmt.Sprintf("%s</%s:%s>\n", tab, prefix, element.Name))
 		}
 	}
 	return nil
 }
 
-func (xv *Validator2) Write(writer bufio.Writer, obj any, name xsd.NameAndNamespace) error {
+func (xv *Validator2) Write(writer *bufio.Writer, obj any, name xsd.NameAndNamespace) error {
 	currentValidator := xv.Resolver.ResolveValidator(name)
-	writer.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
-	xv.writeElement(writer, obj, currentValidator, "")
+	_, err := writer.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n")
+	if err != nil {
+		return err
+	}
+	prefix := xv.Resolver.GetNamespacesMap()[name.Namespace]
+	writer.WriteString(fmt.Sprintf("<%s:%s", prefix, name.Name))
+	for k, v := range xv.Resolver.GetNamespacesMap() {
+		writer.WriteString(fmt.Sprintf("\n    xmlns:%s=\"%s\"", v, k))
+	}
+
+	if !currentValidator.IsComplexType() {
+		vl := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+		if len(vl) > 0 {
+			writer.WriteString(">")
+			writer.WriteString(vl)
+			writer.WriteString(fmt.Sprintf("</%s:%s>", prefix, name.Name))
+		} else {
+			writer.WriteString("/>\n")
+		}
+	} else {
+		isNotNullElementsFound := false
+		for _, state := range currentValidator.GetStates() {
+			methodName := "Get" + state.Name
+			value := reflect.ValueOf(obj).MethodByName(methodName).Call([]reflect.Value{})[0]
+			if value.IsNil() {
+				continue
+			}
+			if state.Type == xsd.ElementNode && !isNotNullElementsFound {
+				isNotNullElementsFound = true
+				writer.WriteString(">\n")
+			}
+
+			obj := value.Interface()
+			prefix := xv.Resolver.GetNamespacesMap()[state.Namespace]
+
+			if state.Type == xsd.ElementNode {
+				nextValidator := currentValidator.ResolveValidator(state)
+				if nextValidator.IsComplexType() {
+					xv.writeElement(writer, obj, nextValidator, " ", state)
+				} else {
+					writer.WriteString(fmt.Sprintf("  <%s:%s>", prefix, state.Name))
+					value := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+					writer.WriteString(value)
+					writer.WriteString(fmt.Sprintf("  </%s:%s>\n", prefix, state.Name))
+				}
+			}
+
+			if state.Type == xsd.AttributeNode {
+
+				nextValidator := currentValidator.ResolveValidator(state)
+				if nextValidator.IsComplexType() {
+					return fmt.Errorf("attribute type have to be simple")
+				}
+				value := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+				writer.WriteString(fmt.Sprintf(" %s:%s=\"%s\"", prefix, state.Name, value))
+			}
+		}
+
+		if !isNotNullElementsFound {
+			writer.WriteString("/>\n")
+		} else {
+			writer.WriteString(fmt.Sprintf("</%s:%s>", prefix, name.Name))
+		}
+	}
+	writer.Flush()
 	return nil
 }
 

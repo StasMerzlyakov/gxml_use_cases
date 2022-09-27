@@ -2,10 +2,12 @@ package api
 
 import (
 	"bufio"
+	"bytes"
+	"fmt"
+	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/crd"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"reflect"
 	"testing"
 )
 
@@ -27,15 +29,16 @@ func TestValidator1(t *testing.T) {
 	assert.NotNil(t, crt)
 	assert.Nil(t, err)
 
-	/*crt.SetCVC(nil)
-	res := reflect.ValueOf(crt).MethodByName("GetCVC").Call([]reflect.Value{})
-	assert.True(t, res[0].IsNil())*/
+	var b bytes.Buffer
+	writer := bufio.NewWriter(&b)
 
-	res := reflect.ValueOf(crt).MethodByName("GetCVC").Call([]reflect.Value{})[0].Interface()
-
-	vl := reflect.ValueOf(res).MethodByName("GetValue").Call([]reflect.Value{})[0].String()
-
-	assert.NotNil(t, vl)
+	nameAndNamespace := xsd.NameAndNamespace{
+		Namespace: "https://github.com/StasMerzlyakov/gxml/card-service",
+		Name:      "CardResponse",
+	}
+	xsdValidator.Write(writer, crt, nameAndNamespace)
+	str := b.String()
+	fmt.Printf("%s\n", str)
 
 	//reflect.TypeOf(crd.CardRequestType)
 
