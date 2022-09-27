@@ -73,23 +73,53 @@ func (s *elementValidatorStack) Peek() (v IElementValidator) {
 	return s.data[l-1]
 }
 
-func (xv *Validator2) writeElement(writer bufio.Writer, any, validator IElementValidator) error {
+func (xv *Validator2) writeElement(writer bufio.Writer, parentObj any, validator IElementValidator, tab string) error {
 	for _, state := range validator.GetStates() {
-
+		methodName := "Get" + state.Name
+		value := reflect.ValueOf(parentObj).MethodByName(methodName).Call([]reflect.Value{})[0]
+		if value.IsNil() {
+			continue
+		}
+		obj := value.Interface()
+		prefix := xv.Resolver.GetNamespacesMap()[state.Namespace]
+		if !validator.IsComplexType() {
+			vl := reflect.ValueOf(obj).MethodByName("GetXmlValue").Call([]reflect.Value{})[0].String()
+			switch state.Type {
+			case xsd.ElementNode:
+				{
+					writer.WriteString(fmt.Sprintf(tab+"<%s:%s>", prefix, state.Name))
+					writer.WriteString(vl)
+					writer.WriteString(fmt.Sprintf(tab+"</%s:%s>", prefix, state.Name))
+				}
+			case xsd.AttributeNode:
+				{
+					writer.WriteString(fmt.Sprintf(" %s:%s=\"", prefix, state.Name))
+					writer.WriteString(vl)
+					writer.WriteString("\"")
+				}
+			}
+		} else {
+			if tab == "" {
+				writer.WriteString(tab + fmt.Sprintf("<%s:%s", prefix, state.Name))
+				for k, v := range xv.Resolver.GetNamespacesMap() {
+					writer.WriteString(fmt.Sprintf("\n    xmlns:%s=\"%s\"", v, k))
+				}
+				writer.WriteString(">\n")
+			} else {
+				writer.WriteString(tab + fmt.Sprintf("<%s:%s>\n", prefix, state.Name))
+			}
+			nextValidator := validator.ResolveValidator(state)
+			xv.writeElement(writer, obj, nextValidator, tab+"  ")
+			writer.WriteString(tab + fmt.Sprintf("</%s:%s>\n", prefix, state.Name))
+		}
 	}
+	return nil
 }
 
-func (xv *Validator2) Write(writer bufio.Writer, any, name xsd.NameAndNamespace) error {
-	var objectStack anyStack
-	var elementValidatorStack elementValidatorStack
-	objectStack.Push(any)
+func (xv *Validator2) Write(writer bufio.Writer, obj any, name xsd.NameAndNamespace) error {
 	currentValidator := xv.Resolver.ResolveValidator(name)
-	elementValidatorStack.Push(currentValidator)
-
-	for {
-
-	}
-
+	writer.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>")
+	xv.writeElement(writer, obj, currentValidator, "")
 	return nil
 }
 

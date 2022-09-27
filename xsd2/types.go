@@ -8,14 +8,19 @@ import (
 
 type Integer interface {
 	GetValue() int
+	GetXmlValue() string
 }
 
 type integerStruct struct {
 	value int
 }
 
-func (str integerStruct) GetValue() int {
+func (str *integerStruct) GetValue() int {
 	return str.value
+}
+
+func (str *integerStruct) GetXmlValue() string {
+	return strconv.Itoa(str.value)
 }
 
 func NewInteger(value string) (Integer, error) {
@@ -23,19 +28,24 @@ func NewInteger(value string) (Integer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return integerStruct{value: intVar}, nil
+	return &integerStruct{value: intVar}, nil
 }
 
 type Decimal interface {
 	GetValue() float64
+	GetXmlValue() string
 }
 
 type decimalStruct struct {
 	value float64
 }
 
-func (str decimalStruct) GetValue() float64 {
+func (str *decimalStruct) GetValue() float64 {
 	return str.value
+}
+
+func (str *decimalStruct) GetXmlValue() string {
+	return fmt.Sprintf("%f", str.value)
 }
 
 func NewDecimal(value string) (Decimal, error) {
@@ -48,30 +58,40 @@ func NewDecimal(value string) (Decimal, error) {
 
 type String interface {
 	GetValue() string
+	GetXmlValue() string
 }
 
 type stringStruct struct {
 	value string
 }
 
-func (str stringStruct) GetValue() string {
+func (str *stringStruct) GetValue() string {
+	return str.value
+}
+
+func (str *stringStruct) GetXmlValue() string {
 	return str.value
 }
 
 func NewString(value string) (String, error) {
-	return stringStruct{value: value}, nil
+	return &stringStruct{value: value}, nil
 }
 
 type GYear interface {
 	GetValue() int
+	GetXmlValue() string
 }
 
 type gYearStruct struct {
 	value int
 }
 
-func (str gYearStruct) GetValue() int {
+func (str *gYearStruct) GetValue() int {
 	return str.value
+}
+
+func (str *gYearStruct) GetXmlValue() string {
+	return fmt.Sprintf("%d", str.value)
 }
 
 func NewGYear(value string) (GYear, error) {
@@ -86,19 +106,24 @@ func NewGYear(value string) (GYear, error) {
 	if err != nil {
 		return nil, err
 	}
-	return gYearStruct{value: intVar}, nil
+	return &gYearStruct{value: intVar}, nil
 }
 
 type GMonth interface {
 	GetValue() int
+	GetXmlValue() string
 }
 
 type gMonthStruct struct {
 	value int
 }
 
-func (str gMonthStruct) GetValue() int {
+func (str *gMonthStruct) GetValue() int {
 	return str.value
+}
+
+func (str *gMonthStruct) GetXmlValue() string {
+	return fmt.Sprintf("--%d", str.value)
 }
 
 func NewGMonth(value string) (GMonth, error) {
@@ -118,19 +143,24 @@ func NewGMonth(value string) (GMonth, error) {
 		return nil, err
 	}
 
-	return gMonthStruct{value: intVar}, nil
+	return &gMonthStruct{value: intVar}, nil
 }
 
 type GDay interface {
 	GetValue() int
+	GetXmlValue() string
 }
 
 type gDayStruct struct {
 	value int
 }
 
-func (str gDayStruct) GetValue() int {
+func (str *gDayStruct) GetValue() int {
 	return str.value
+}
+
+func (str *gDayStruct) GetXmlValue() string {
+	return fmt.Sprintf("---%d", str.value)
 }
 
 func NewGDay(value string) (GDay, error) {
@@ -149,7 +179,7 @@ func NewGDay(value string) (GDay, error) {
 	if err != nil {
 		return nil, err
 	}
-	return gDayStruct{value: intVar}, nil
+	return &gDayStruct{value: intVar}, nil
 }
 
 type DateTime interface {
@@ -159,5 +189,5 @@ type dateTimeStruct struct {
 }
 
 func NewDateTime(value string) (DateTime, error) {
-	return dateTimeStruct{}, nil
+	return &dateTimeStruct{}, nil
 }
