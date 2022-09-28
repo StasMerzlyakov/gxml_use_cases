@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"strings"
 )
 
@@ -36,7 +35,7 @@ func (cv *MiddleStringTypeValidator) AcceptElement(elementType xsd.ElementData) 
 	return nil
 }
 
-func (cv *MiddleStringTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+func (cv *MiddleStringTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
 	return nil
 }
 
@@ -50,7 +49,7 @@ func (cv *MiddleStringTypeValidator) CompleteElement() error {
 }
 
 func (cv *MiddleStringTypeValidator) GetInstance() (any, error) {
-	return xsd2.NewString(cv.sb.String())
+	return xsd.NewString(cv.sb.String())
 }
 
 func (cv *MiddleStringTypeValidator) IsComplexType() bool {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"strings"
 )
 
@@ -45,12 +44,12 @@ func (cv *CvcTypeValidator) CompleteElement() error {
 	}
 }
 
-func (cv *CvcTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+func (cv *CvcTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
 	return nil
 }
 
 func (cv *CvcTypeValidator) GetInstance() (any, error) {
-	return xsd2.NewString(cv.sb.String())
+	return xsd.NewString(cv.sb.String())
 }
 
 func (cv *CvcTypeValidator) IsComplexType() bool {

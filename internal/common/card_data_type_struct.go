@@ -1,43 +1,45 @@
 package common
 
-import "github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+import (
+	"github.com/StasMerzlyakov/gxml/xsd"
+)
 
 type CardDataTypeStruct struct {
-	CardType       xsd2.String
-	CardNumber     xsd2.String
-	ExpirationDate xsd2.String
+	CardType       xsd.String
+	CardNumber     xsd.String
+	ExpirationDate xsd.String
 }
 
 type CardDataType interface {
-	GetCardType() xsd2.String
-	SetCardType(value xsd2.String)
-	GetCardNumber() xsd2.String
-	SetCardNumber(value xsd2.String)
-	GetExpirationDate() xsd2.String
-	SetExpirationDate(value xsd2.String)
+	GetCardType() xsd.String
+	SetCardType(value xsd.String)
+	GetCardNumber() xsd.String
+	SetCardNumber(value xsd.String)
+	GetExpirationDate() xsd.String
+	SetExpirationDate(value xsd.String)
 }
 
-func (st *CardDataTypeStruct) GetCardType() xsd2.String {
+func (st *CardDataTypeStruct) GetCardType() xsd.String {
 	return st.CardType
 }
 
-func (st *CardDataTypeStruct) SetCardType(value xsd2.String) {
+func (st *CardDataTypeStruct) SetCardType(value xsd.String) {
 	st.CardType = value
 }
 
-func (st *CardDataTypeStruct) GetCardNumber() xsd2.String {
+func (st *CardDataTypeStruct) GetCardNumber() xsd.String {
 	return st.CardNumber
 }
 
-func (st *CardDataTypeStruct) SetCardNumber(value xsd2.String) {
+func (st *CardDataTypeStruct) SetCardNumber(value xsd.String) {
 	st.CardNumber = value
 }
 
-func (st *CardDataTypeStruct) GetExpirationDate() xsd2.String {
+func (st *CardDataTypeStruct) GetExpirationDate() xsd.String {
 	return st.ExpirationDate
 }
 
-func (st *CardDataTypeStruct) SetExpirationDate(value xsd2.String) {
+func (st *CardDataTypeStruct) SetExpirationDate(value xsd.String) {
 	st.ExpirationDate = value
 }
 

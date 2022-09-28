@@ -1,43 +1,45 @@
 package common
 
-import "github.com/StasMerzlyakov/gxml_use_cases/xsd2"
+import (
+	"github.com/StasMerzlyakov/gxml/xsd"
+)
 
 type ComplexDateTypeStruct struct {
-	Year  xsd2.GYear
-	Month xsd2.GMonth
-	Day   xsd2.GDay
+	Year  xsd.GYear
+	Month xsd.GMonth
+	Day   xsd.GDay
 }
 
 type ComplexDateType interface {
-	GetYear() xsd2.GYear
-	SetYear(value xsd2.GYear)
-	GetMonth() xsd2.GMonth
-	SetMonth(value xsd2.GMonth)
-	GetDay() xsd2.GDay
-	SetDay(value xsd2.GDay)
+	GetYear() xsd.GYear
+	SetYear(value xsd.GYear)
+	GetMonth() xsd.GMonth
+	SetMonth(value xsd.GMonth)
+	GetDay() xsd.GDay
+	SetDay(value xsd.GDay)
 }
 
-func (sv *ComplexDateTypeStruct) GetYear() xsd2.GYear {
+func (sv *ComplexDateTypeStruct) GetYear() xsd.GYear {
 	return sv.Year
 }
 
-func (sv *ComplexDateTypeStruct) SetYear(value xsd2.GYear) {
+func (sv *ComplexDateTypeStruct) SetYear(value xsd.GYear) {
 	sv.Year = value
 }
 
-func (sv *ComplexDateTypeStruct) GetMonth() xsd2.GMonth {
+func (sv *ComplexDateTypeStruct) GetMonth() xsd.GMonth {
 	return sv.Month
 }
 
-func (sv *ComplexDateTypeStruct) SetMonth(value xsd2.GMonth) {
+func (sv *ComplexDateTypeStruct) SetMonth(value xsd.GMonth) {
 	sv.Month = value
 }
 
-func (sv *ComplexDateTypeStruct) GetDay() xsd2.GDay {
+func (sv *ComplexDateTypeStruct) GetDay() xsd.GDay {
 	return sv.Day
 }
 
-func (sv *ComplexDateTypeStruct) SetDay(value xsd2.GDay) {
+func (sv *ComplexDateTypeStruct) SetDay(value xsd.GDay) {
 	sv.Day = value
 }
 

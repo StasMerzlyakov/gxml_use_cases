@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"golang.org/x/exp/maps"
 )
 
@@ -92,7 +91,7 @@ func (cv *ValidityPeriodTypeValidator) GetStates() []xsd.ElementData {
 	return maps.Values(validityPeriodTypeStateToElement)
 }
 
-func (cv *ValidityPeriodTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+func (cv *ValidityPeriodTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
 	switch elementData {
 	case validityPeriodTypeElementData1:
 		validator1 := DateTimeTypeValidator{}

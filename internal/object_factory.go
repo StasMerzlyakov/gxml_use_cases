@@ -4,7 +4,6 @@ import (
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/common"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/crd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 var namespacesToPackageMap = map[string]string{
@@ -19,7 +18,7 @@ func (Resolver) GetNamespacesMap() map[string]string {
 	return namespacesToPackageMap
 }
 
-func (Resolver) ResolveValidator(name xsd.NameAndNamespace) xsd2.IElementValidator {
+func (Resolver) ResolveValidator(name xsd.NameAndNamespace) xsd.IElementValidator {
 	if packageName, ok := namespacesToPackageMap[name.Namespace]; !ok {
 		return nil
 	} else {

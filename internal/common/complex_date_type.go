@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"golang.org/x/exp/maps"
 )
 
@@ -98,7 +97,7 @@ var complexDateTypeElementData3 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *ComplexDateTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+func (cv *ComplexDateTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
 	switch elementData {
 	case complexDateTypeElementData1:
 		validator1 := ComplexDateTypeYearTypeValidator{}

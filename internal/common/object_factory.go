@@ -2,7 +2,6 @@ package common
 
 import (
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 )
 
 var birthDateElement = xsd.NameAndNamespace{
@@ -10,7 +9,7 @@ var birthDateElement = xsd.NameAndNamespace{
 	Name:      "BirthDate",
 }
 
-func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd2.IElementValidator {
+func ResolveValidator(nameAndNamespace xsd.NameAndNamespace) xsd.IElementValidator {
 	switch nameAndNamespace {
 	case birthDateElement:
 		birthDateElementValidator := ComplexDateTypeValidator{}

@@ -6,7 +6,6 @@ import (
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
 	"github.com/StasMerzlyakov/gxml_use_cases/internal/common"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"golang.org/x/exp/maps"
 )
 
@@ -101,7 +100,7 @@ var cardResponseTypeElementData2 = xsd.ElementData{
 	Type:      xsd.ElementNode,
 }
 
-func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+func (cv *cardResponseTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
 	switch elementData {
 	case cardResponseTypeElementData1:
 		validator1 := common.CvcTypeValidator{}

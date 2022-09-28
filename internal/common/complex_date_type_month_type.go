@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/StasMerzlyakov/gxml/util"
 	"github.com/StasMerzlyakov/gxml/xsd"
-	"github.com/StasMerzlyakov/gxml_use_cases/xsd2"
 	"strings"
 )
 
@@ -45,12 +44,12 @@ func (cv *ComplexDateTypeMonthTypeValidator) CompleteElement() error {
 	}
 }
 
-func (cv *ComplexDateTypeMonthTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd2.IElementValidator {
+func (cv *ComplexDateTypeMonthTypeValidator) ResolveValidator(elementData xsd.ElementData) xsd.IElementValidator {
 	return nil
 }
 
 func (cv *ComplexDateTypeMonthTypeValidator) GetInstance() (any, error) {
-	return xsd2.NewGMonth(cv.sb.String())
+	return xsd.NewGMonth(cv.sb.String())
 }
 
 func (cv *ComplexDateTypeMonthTypeValidator) IsComplexType() bool {
